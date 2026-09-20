@@ -3,6 +3,18 @@
 'use strict';
 
 module.exports = {
+	async getPresenceDiagnostics({ homey })
+	{
+		const devices = [];
+		for (const driver of Object.values(homey.drivers.getDrivers()))
+		{
+			for (const device of Object.values(driver.getDevices()))
+			{
+				if (typeof device.getPresenceDiagnostics === 'function') devices.push(device.getPresenceDiagnostics());
+			}
+		}
+		return { generatedAt: new Date().toISOString(), polling: homey.app.hubPollingStatus || null, devices };
+	},
 	async getLog({ homey, query })
 	{
 		return homey.app.diagLog;

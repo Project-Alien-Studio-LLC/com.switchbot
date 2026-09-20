@@ -537,6 +537,10 @@
 		]
 	},
 	"api": {
+		"getPresenceDiagnostics": {
+			"method": "get",
+			"path": "/getPresenceDiagnostics/"
+		},
 		"getLog": {
 			"method": "get",
 			"path": "/getLog/"

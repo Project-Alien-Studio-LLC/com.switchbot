@@ -17,7 +17,8 @@
   "class": "sensor",
   "capabilities": [
     "alarm_presence",
-	"measure_luminance"
+	"measure_luminance",
+	"presence_last_report"
   ],
   "energy": {
     "batteries": [

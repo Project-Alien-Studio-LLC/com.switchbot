@@ -1,0 +1,6 @@
+{
+	"type": "string",
+	"title": { "en": "Last presence report received (UTC)" },
+	"getable": true,
+	"setable": false
+}

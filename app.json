@@ -538,6 +538,10 @@
     ]
   },
   "api": {
+    "getPresenceDiagnostics": {
+      "method": "get",
+      "path": "/getPresenceDiagnostics/"
+    },
     "getLog": {
       "method": "get",
       "path": "/getLog/"
@@ -10623,7 +10627,8 @@
       "class": "sensor",
       "capabilities": [
         "alarm_presence",
-        "measure_luminance"
+        "measure_luminance",
+        "presence_last_report"
       ],
       "energy": {
         "batteries": [
@@ -14866,6 +14871,14 @@
         "ko": "켜기"
       },
       "icon": "/assets/power_on.svg"
+    },
+    "presence_last_report": {
+      "type": "string",
+      "title": {
+        "en": "Last presence report received (UTC)"
+      },
+      "getable": true,
+      "setable": false
     },
     "prev": {
       "type": "boolean",

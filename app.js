@@ -2227,8 +2227,33 @@ class MyApp extends OAuth2App
 	async doWebhookReg()
 	{
 		this.homeyWebhookRegTimerID = null;
+		if (this.homeyWebhookRegistrationRunning)
+		{
+			this.homeyWebhookRegistrationPending = true;
+			return;
+		}
+
+		this.homeyWebhookRegistrationRunning = true;
+		try
+		{
+			await this.registerHomeyWebhookSnapshot();
+		}
+		finally
+		{
+			this.homeyWebhookRegistrationRunning = false;
+			if (this.homeyWebhookRegistrationPending)
+			{
+				this.homeyWebhookRegistrationPending = false;
+				if (this.homeyWebhookRegTimerID) this.homey.clearTimeout(this.homeyWebhookRegTimerID);
+				this.homeyWebhookRegTimerID = this.homey.setTimeout(() => this.doWebhookReg(), 2000);
+			}
+		}
+	}
+
+	async registerHomeyWebhookSnapshot()
+	{
 		const data = {
-			$keys: this.devicesMACs,
+			$keys: [...this.devicesMACs],
 		};
 
 		// Setup the webhook call back to receive push notifications
@@ -2746,7 +2771,8 @@ class MyApp extends OAuth2App
 
 	async onHubPoll()
 	{
-		this.homey.app.updateLog(`Polling hub: ${this.homey.app.apiCalls} API calls today`, 'hub');
+		this.hubPollingStatus = { startedAt: new Date().toISOString(), finishedAt: null, nextPollAt: null };
+		this.homey.app.updateLog(`Polling hub: ${this.homey.app.apiCalls} API calls today`, 2, 'hub');
 		if (this.timerHubID)
 		{
 			this.homey.clearTimeout(this.timerHubID);
@@ -2808,7 +2834,15 @@ class MyApp extends OAuth2App
 			const quotaIntervalMs = Math.ceil((SECONDS_PER_DAY * 1000 * totalHuBDevices * this.numConnections) / POLLING_DAILY_BUDGET);
 			const nextInterval = Math.max(minimumIntervalMs, quotaIntervalMs);
 
-			this.homey.app.updateLog(`Next HUB polling interval = ${nextInterval / 1000}s for ${totalHuBDevices} active devices across ${this.numConnections} Homey account connection(s): ${this.homey.app.apiCalls} API calls today`, 'hub');
+			this.hubPollingStatus = {
+				...this.hubPollingStatus,
+				finishedAt: new Date().toISOString(),
+				nextPollAt: new Date(Date.now() + nextInterval).toISOString(),
+				intervalSeconds: nextInterval / 1000,
+				devices: totalHuBDevices,
+				connections: this.numConnections,
+			};
+			this.homey.app.updateLog(`Next HUB polling interval = ${nextInterval / 1000}s for ${totalHuBDevices} active devices across ${this.numConnections} Homey account connection(s): ${this.homey.app.apiCalls} API calls today`, 2, 'hub');
 			this.timerHubID = this.homey.setTimeout(this.onHubPoll, nextInterval);
 		}
 	}
