@@ -3,6 +3,7 @@
 'use strict';
 
 const HubDevice = require('../hub_device');
+const { formatReportTime } = require('../../lib/report-display');
 
 class PlugHubDevice extends HubDevice
 {
@@ -16,6 +17,11 @@ class PlugHubDevice extends HubDevice
 		if (!this.hasCapability('plug_last_polled'))
 		{
 			await this.addCapability('plug_last_polled');
+		}
+		const previousReport = this.getCapabilityValue('plug_last_polled');
+		if (typeof previousReport === 'string' && /^\d{4}-/.test(previousReport))
+		{
+			await this.setCapabilityValue('plug_last_polled', formatReportTime(previousReport, this.homey));
 		}
 
 		this.registerCapabilityListener('onoff', this.onCapabilityOnOff.bind(this));
@@ -94,7 +100,7 @@ class PlugHubDevice extends HubDevice
 					|| Number.isFinite(data.weight);
 				if (hasStatus)
 				{
-					await this.setCapabilityValue('plug_last_polled', new Date().toISOString());
+					await this.setCapabilityValue('plug_last_polled', formatReportTime(Date.now(), this.homey));
 				}
 
 				if (data.power)

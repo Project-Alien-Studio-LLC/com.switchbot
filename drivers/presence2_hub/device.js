@@ -3,6 +3,7 @@
 'use strict';
 
 const HubDevice = require('../hub_device');
+const { formatReportTime } = require('../../lib/report-display');
 
 class Presence2HubDevice extends HubDevice
 {
@@ -68,6 +69,11 @@ class Presence2HubDevice extends HubDevice
 		if (!this.hasCapability('presence_last_report'))
 		{
 			await this.addCapability('presence_last_report');
+		}
+		const previousReport = this.getCapabilityValue('presence_last_report');
+		if (typeof previousReport === 'string' && /^\d{4}-/.test(previousReport))
+		{
+			await this.setCapabilityValue('presence_last_report', formatReportTime(previousReport, this.homey));
 		}
 
 		if (!this.hasCapability('measure_luminance'))
@@ -211,7 +217,7 @@ class Presence2HubDevice extends HubDevice
 		}
 		if (presence !== null)
 		{
-			await this.setCapabilityValue('presence_last_report', receivedAt);
+			await this.setCapabilityValue('presence_last_report', formatReportTime(receivedAt, this.homey));
 			await this.setAvailable();
 			await this.unsetWarning();
 			diagnostics.lastPresenceReportAt = receivedAt;

@@ -61,7 +61,7 @@ test('both documented Detected and observed detected status fields are accepted'
 		values.alarm_presence = false;
 		await device.getHubDeviceValues();
 		assert.equal(values.alarm_presence, true);
-		assert.match(values.presence_last_report, /^\d{4}-\d\d-\d\dT/);
+		assert.match(values.presence_last_report, /^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d{2} [AP]M$/);
 	}
 });
 
@@ -130,5 +130,5 @@ test('a failed capability write does not poison subsequent reports', async () =>
 	await device.processWebhookMessage(webhook({ detectionState: 'NOT_DETECTED', lightLevel: 3 }));
 	assert.equal(values.alarm_presence, false);
 	assert.equal(values.measure_luminance, 15);
-	assert.match(values.presence_last_report, /^\d{4}-\d\d-\d\dT/);
+	assert.match(values.presence_last_report, /^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d{2} [AP]M$/);
 });

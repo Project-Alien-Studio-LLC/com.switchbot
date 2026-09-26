@@ -32,7 +32,7 @@ test('unchanged successful plug status still records a fresh poll', async () => 
 	const { device, updates } = deviceWithResponse({ power: 'on', electricCurrent: 0, voltage: 121, weight: 0 });
 	await device.getHubDeviceValues();
 	const heartbeat = updates.find(({ id }) => id === 'plug_last_polled');
-	assert.match(heartbeat.value, /^\d{4}-\d\d-\d\dT/);
+	assert.match(heartbeat.value, /^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d{2} [AP]M$/);
 });
 
 test('empty or failed plug status cannot create a heartbeat', async () => {

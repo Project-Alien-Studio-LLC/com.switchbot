@@ -1,6 +1,7 @@
 {
 	"type": "string",
-	"title": { "en": "Last presence report received (UTC)" },
+	"title": { "en": "Last report" },
+	"icon": "/assets/clock.svg",
 	"getable": true,
 	"setable": false
 }

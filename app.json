@@ -14356,11 +14356,11 @@
     "k11_last_seen": {
       "type": "string",
       "title": {
-        "en": "Last valid status (UTC)"
+        "en": "Last report"
       },
       "getable": true,
       "setable": false,
-      "icon": "/assets/vacuum_state.svg"
+      "icon": "/assets/clock.svg"
     },
     "k11_monitor_status": {
       "type": "string",
@@ -14790,10 +14790,11 @@
     "plug_last_polled": {
       "type": "string",
       "title": {
-        "en": "Last verified plug poll (UTC)"
+        "en": "Last checked"
       },
       "getable": true,
-      "setable": false
+      "setable": false,
+      "icon": "/assets/clock.svg"
     },
     "position": {
       "type": "number",
@@ -14875,8 +14876,9 @@
     "presence_last_report": {
       "type": "string",
       "title": {
-        "en": "Last presence report received (UTC)"
+        "en": "Last report"
       },
+      "icon": "/assets/clock.svg",
       "getable": true,
       "setable": false
     },

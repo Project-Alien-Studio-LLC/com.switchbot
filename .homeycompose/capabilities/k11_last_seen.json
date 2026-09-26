@@ -1,1 +1,1 @@
-{ "type": "string", "title": { "en": "Last valid status (UTC)" }, "getable": true, "setable": false, "icon": "/assets/vacuum_state.svg" }
+{ "type": "string", "title": { "en": "Last report" }, "getable": true, "setable": false, "icon": "/assets/clock.svg" }

@@ -1,1 +1,1 @@
-{ "type": "string", "title": { "en": "Last verified plug poll (UTC)" }, "getable": true, "setable": false }
+{ "type": "string", "title": { "en": "Last checked" }, "getable": true, "setable": false, "icon": "/assets/clock.svg" }

@@ -191,10 +191,10 @@ test('monitor publishes receipt age and disposes its timer without device comman
 	f.device.homey.setInterval = (callback, delay) => { interval = delay; return 123; };
 	f.device.homey.clearInterval = (timer) => { cleared = timer; };
 	await f.monitor.init();
-	assert.equal(values.k11_last_seen, 'Not received');
+	assert.equal(values.k11_last_seen, 'Awaiting report');
 	await f.monitor.record(data());
 	assert.equal(values.measure_k11_status_age, 0);
-	assert.match(values.k11_last_seen, /^\d{4}-/);
+	assert.match(values.k11_last_seen, /^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d{2} [AP]M$/);
 	assert.equal(interval, MINUTE);
 	f.monitor.stop();
 	assert.equal(cleared, 123);
