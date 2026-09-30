@@ -17,6 +17,7 @@ const nodemailer = require('nodemailer');
 const HubInterface = require('./lib/hub_interface');
 const BLEHubInterface = require('./lib/ble_hub_interface');
 const SwitchBotOAuth2Client = require('./lib/SwitchBotOAuth2Client');
+const ensureWebhookHealth = require('./lib/webhook-health');
 
 // The diagnostic mail server presents a long-lived self-signed certificate
 // (Synology, valid 2020-04-01 to 2039-12-18), so public CA validation cannot
@@ -251,6 +252,7 @@ class MyApp extends OAuth2App
 
 	getWebhookAuthMode()
 	{
+		if (this.openToken && this.openSecret) return 'API token';
 		const oAuth2Client = this.getFirstSavedOAuth2Client();
 		if (oAuth2Client)
 		{
@@ -478,6 +480,7 @@ class MyApp extends OAuth2App
 		this.blePolling = false;
 		this.bleBusy = false;
 		this.devicesMACs = [];
+		this.webhookDiagnostics = { startedAt: new Date().toISOString() };
 		this.homeyWebhookRegTimerID = null;
 		this.switchBotWebhookTimerID = null;
 		this.apiCallsPersistTimer = null;
@@ -1975,12 +1978,16 @@ class MyApp extends OAuth2App
 
 	async processWebhookMessage(message)
 	{
+		this.webhookDiagnostics = this.webhookDiagnostics || {};
+		this.webhookDiagnostics.lastMessageAt = new Date().toISOString();
+		this.webhookDiagnostics.messages = (this.webhookDiagnostics.messages || 0) + 1;
 		this.updateLog(`Got a webhook message! ${this.varToString(message)}`, 1, 'hub');
 
 		// Determine which devices should receive the webhook message.
 		const directDevices = this.getWebhookDispatchDevices(message);
 		if (directDevices.length === 0)
 		{
+			this.webhookDiagnostics.unmatchedMessages = (this.webhookDiagnostics.unmatchedMessages || 0) + 1;
 			// No devices were found to handle the webhook message. Log diagnostic information for debugging.
 			const context = message && message.context ? message.context : (message || {});
 			const ignoredKeys = new Set();
@@ -2252,6 +2259,8 @@ class MyApp extends OAuth2App
 
 	async registerHomeyWebhookSnapshot()
 	{
+		this.webhookDiagnostics = this.webhookDiagnostics || {};
+		this.webhookDiagnostics.lastRegistrationAttemptAt = new Date().toISOString();
 		const data = {
 			$keys: [...this.devicesMACs],
 		};
@@ -2270,6 +2279,7 @@ class MyApp extends OAuth2App
 			}
 			catch (err)
 			{
+				this.webhookDiagnostics.lastRegistrationError = this.redactSensitiveLogData(err.message);
 				this.updateLog(`Homey Webhook failed to unregister, Error: ${err.message}`, 0, 'hub');
 
 				// Try again later with exponential backoff
@@ -2313,10 +2323,14 @@ class MyApp extends OAuth2App
 			});
 
 			this.updateLog(`Homey Webhook registered for devices ${this.homey.app.varToString(data)}`, 1, 'hub');
+			this.webhookDiagnostics.registeredAt = new Date().toISOString();
+			this.webhookDiagnostics.registeredDeviceCount = data.$keys.length;
+			this.webhookDiagnostics.lastRegistrationError = null;
 			this.webhookRetryCount = 0;
 		}
 		catch (err)
 		{
+			this.webhookDiagnostics.lastRegistrationError = this.redactSensitiveLogData(err.message);
 			this.updateLog(`Homey Webhook registration failed for devices ${this.homey.app.varToString(data)}, Error: ${err.message}`, 0, 'hub');
 
 			// Exponential backoff with jitter and cap
@@ -2334,83 +2348,39 @@ class MyApp extends OAuth2App
 
 	async ensureSwitchBotWebhook()
 	{
+		this.webhookDiagnostics = this.webhookDiagnostics || {};
+		this.webhookDiagnostics.lastProviderCheckAt = new Date().toISOString();
+		this.webhookDiagnostics.providerCheckInProgress = true;
 		try
 		{
-			let webhookClient = this.getFirstSavedOAuth2Client();
-			let webhookClientType = 'OAuth2';
+			// Match the status-poll credential selection when both auth modes exist.
+			const webhookClient = this.openToken && this.openSecret ? this.hub : this.getFirstSavedOAuth2Client();
+			const webhookClientType = this.openToken && this.openSecret ? 'API token' : 'OAuth2';
+			this.webhookDiagnostics.authMode = webhookClientType;
 
 			if (!webhookClient)
 			{
-				if (this.openToken && this.openSecret)
-				{
-					webhookClient = this.hub;
-					webhookClientType = 'API token';
-					this.homey.app.updateLog('No OAuth client available, using API token/secret for SwitchBot webhook', 1, 'hub');
-				}
-				else
-				{
-					this.homey.app.updateLog('No OAuth client or API token/secret available to register the SwitchBot webhook', 0, 'hub');
-					return false;
-				}
+				throw new Error('No authentication available for SwitchBot webhook');
 			}
-
-			if (webhookClient)
-			{
-				// Fetch any exitsing webhook
-				const response1 = await webhookClient.getWebhook();
-				if (response1)
-				{
-					if (!response1.statusCode || response1.statusCode === 100)
-					{
-						// We got a valid response so make sure it is the correct webhook
-						const body = response1.body ? response1.body : response1;
-						if (body.urls && Array.isArray(body.urls) && body.urls.length > 0)
-						{
-							if (body.urls[0].localeCompare(Homey.env.WEBHOOK_URL, 'en', { sensitivity: 'base' }) === 0)
-							{
-								this.homey.app.updateLog(`SwitchBot webhook already registered (${webhookClientType})`, 1, 'hub');
-								return true;
-							}
-
-							// Delete the current web hook so we can replace it with ours
-							const response2 = await webhookClient.deleteWebhook(body.urls[0]);
-							if (response2)
-							{
-								if (response2.statusCode && response2.statusCode !== 100)
-								{
-									this.homey.app.updateLog(`Delete webhook failed\nInvalid response code: ${response2.statusCode}\nMessage: ${response2.message}`, 0, 'hub');
-									return false;
-								}
-
-								this.homey.app.updateLog(`Deleted old webhook (${webhookClientType})`, 3, 'hub');
-							}
-						}
-						else
-						{
-							this.homey.app.updateLog(`No existing SwitchBot webhook found (${webhookClientType})`, 3, 'hub');
-						}
-					}
-				}
-
-				const response = await webhookClient.setWebhook(Homey.env.WEBHOOK_URL);
-				if (response)
-				{
-					if (!response.statusCode || response.statusCode !== 100)
-					{
-						this.homey.app.updateLog(`Invalid response code: ${response.statusCode}\nMessage: ${response.message}`, 0, 'hub');
-						return false;
-					}
-					this.homey.app.updateLog(`Registered SwitchBot webhook (${webhookClientType})`, 1, 'hub');
-					return true;
-				}
-				this.homey.app.updateLog(`No response when registering the SwitchBot webhook (${webhookClientType})`, 0, 'hub');
-				return false;
-			}
+			const health = await ensureWebhookHealth(webhookClient, Homey.env.WEBHOOK_URL);
+			this.webhookDiagnostics.providerEnabled = health.enabled;
+			this.webhookDiagnostics.providerDeviceList = health.deviceList;
+			if (health.created || health.repaired) this.webhookDiagnostics.lastProviderRepairAt = new Date().toISOString();
+			this.webhookDiagnostics.lastProviderSuccessAt = new Date().toISOString();
+			this.webhookDiagnostics.lastProviderError = null;
+			this.homey.app.updateLog(`SwitchBot webhook verified (${webhookClientType})`, 1, 'hub');
+			return true;
 		}
 		catch (err)
 		{
 			const errorMessage = this.formatRateLimitErrorMessage(err && err.message ? err.message : err);
+			this.webhookDiagnostics.lastProviderError = this.redactSensitiveLogData(errorMessage);
 			this.homey.app.updateLog(`Invalid response: ${errorMessage}`, 0, 'hub');
+		}
+		finally
+		{
+			this.webhookDiagnostics.providerCheckInProgress = false;
+			this.webhookDiagnostics.lastProviderCheckFinishedAt = new Date().toISOString();
 		}
 
 		return false;
@@ -2487,6 +2457,7 @@ class MyApp extends OAuth2App
 
 		// setup to call this function again after the timer expires to ensure the webhook is always registered
 		this.switchBotWebhookTimerID = this.homey.setTimeout(() => this.setupSwitchBotWebhook(), timer);
+		this.webhookDiagnostics.nextProviderCheckAt = new Date(Date.now() + timer).toISOString();
 	}
 
 	/**

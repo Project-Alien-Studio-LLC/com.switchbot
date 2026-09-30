@@ -13,7 +13,17 @@ module.exports = {
 				if (typeof device.getPresenceDiagnostics === 'function') devices.push(device.getPresenceDiagnostics());
 			}
 		}
-		return { generatedAt: new Date().toISOString(), polling: homey.app.hubPollingStatus || null, devices };
+		return {
+			generatedAt: new Date().toISOString(),
+			polling: homey.app.hubPollingStatus || null,
+			webhook: {
+				...homey.app.webhookDiagnostics,
+				registrationInProgress: Boolean(homey.app.homeyWebhookRegistrationRunning),
+				receiverPresent: Boolean(homey.app.homeyWebhook),
+				registeredDeviceIds: [...(homey.app.devicesMACs || [])],
+			},
+			devices,
+		};
 	},
 	async getLog({ homey, query })
 	{
