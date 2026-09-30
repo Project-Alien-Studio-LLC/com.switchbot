@@ -11,6 +11,7 @@ Module._load = function mockHomeyOAuth(request, parent, isMain)
 	return originalLoad.call(this, request, parent, isMain);
 };
 const PresenceDevice = require('../drivers/presence2_hub/device');
+
 Module._load = originalLoad;
 
 function createDevice(response = { detected: true })
@@ -74,6 +75,70 @@ test('zero luminance and zero battery are recorded from polling and webhooks', a
 	await pushed.device.processWebhookMessage(webhook({ detectionState: 'NOT_DETECTED', lightLevel: 0, battery: 0 }));
 	assert.equal(pushed.values.measure_luminance, 0);
 	assert.equal(pushed.values.measure_battery, 0);
+});
+
+test('battery display uses documented SwitchBot bands instead of pretending to show an exact percent', async () => {
+	const { device, values } = createDevice({ detected: false, battery: 60 });
+	await device.getHubDeviceValues();
+	assert.equal(values.measure_battery, 60);
+	assert.equal(values.presence_battery_band, '20–60%');
+	for (const [battery, expected] of [[10, 'Below 10%'], [20, '10–20%'], [100, 'At least 60%'], [37, '37% reported']])
+	{
+		await device.processWebhookMessage(webhook({ battery }));
+		assert.equal(values.presence_battery_band, expected);
+	}
+	assert.equal(device.formatBatteryBand(null), 'Unknown');
+});
+
+test('existing devices gain display capabilities without resetting a previous event', async () => {
+	const { device, values } = createDevice();
+	const capabilities = new Set(['alarm_presence', 'measure_luminance', 'measure_battery', 'presence_last_report']);
+	const added = [];
+	values.measure_battery = 60;
+	values.presence_last_event = 'Sep 28, 2:30 PM';
+	device.hasCapability = (id) => capabilities.has(id);
+	device.addCapability = async (id) => { capabilities.add(id); added.push(id); };
+	await device.ensurePresentationCapabilities();
+	assert.deepEqual(added, ['presence_battery_band', 'presence_last_event']);
+	assert.equal(values.presence_battery_band, '20–60%');
+	assert.equal(values.presence_last_event, 'Sep 28, 2:30 PM');
+	await device.ensurePresentationCapabilities();
+	assert.equal(added.length, 2);
+});
+
+test('unknown battery remains unknown until a battery field arrives', async () => {
+	const { device, values } = createDevice({ detected: false });
+	delete values.measure_battery;
+	await device.ensurePresentationCapabilities();
+	assert.equal(values.presence_battery_band, 'Unknown');
+	assert.equal(values.presence_last_event, 'No event observed');
+	await device.getHubDeviceValues();
+	assert.equal(values.presence_battery_band, 'Unknown');
+});
+
+test('a display-capability failure does not block presence or valid receipt updates', async () => {
+	const { device, values } = createDevice({ detected: false, battery: 60 });
+	const write = device.setCapabilityValue;
+	device.setCapabilityValue = async (id, value) => {
+		if (id === 'presence_battery_band') throw new Error('Display unavailable');
+		await write(id, value);
+	};
+	await device.getHubDeviceValues();
+	assert.equal(values.alarm_presence, false);
+	assert.equal(values.measure_battery, 60);
+	assert.match(values.presence_last_report, /^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d{2} [AP]M$/);
+});
+
+test('only accepted webhooks advance the displayed sensor-event receipt', async () => {
+	const { device, values } = createDevice({ detected: false, battery: 100 });
+	values.presence_last_event = 'No event observed';
+	await device.getHubDeviceValues();
+	assert.equal(values.presence_last_event, 'No event observed');
+	await device.processWebhookMessage(webhook({ lightLevel: 2, timeOfSample: Date.now() }));
+	assert.match(values.presence_last_event, /^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d{2} [AP]M$/);
+	const accepted = values.presence_last_event;
+	await device.processWebhookMessage(webhook({ detected: true, timeOfSample: Date.now() - 60000 }));
+	assert.equal(values.presence_last_event, accepted);
 });
 
 test('unchanged valid presence advances receipt heartbeat; failed poll does not', async () => {

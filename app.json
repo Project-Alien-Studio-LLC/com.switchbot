@@ -10628,7 +10628,9 @@
       "capabilities": [
         "alarm_presence",
         "measure_luminance",
-        "presence_last_report"
+        "presence_battery_band",
+        "presence_last_report",
+        "presence_last_event"
       ],
       "energy": {
         "batteries": [
@@ -14873,10 +14875,30 @@
       },
       "icon": "/assets/power_on.svg"
     },
+    "presence_battery_band": {
+      "type": "string",
+      "title": {
+        "en": "Battery range (last known)"
+      },
+      "icon": "/assets/battery-band.svg",
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "presence_last_event": {
+      "type": "string",
+      "title": {
+        "en": "Last SwitchBot event received"
+      },
+      "icon": "/assets/clock.svg",
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
     "presence_last_report": {
       "type": "string",
       "title": {
-        "en": "Last report"
+        "en": "Last valid status received"
       },
       "icon": "/assets/clock.svg",
       "getable": true,

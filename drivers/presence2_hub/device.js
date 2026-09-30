@@ -7,6 +7,54 @@ const { formatReportTime } = require('../../lib/report-display');
 
 class Presence2HubDevice extends HubDevice
 {
+	formatBatteryBand(value)
+	{
+		if (!Number.isFinite(value) || value < 0 || value > 100) return 'Unknown';
+		if (value === 100) return 'At least 60%';
+		if (value === 60) return '20–60%';
+		if (value === 20) return '10–20%';
+		if (value === 10) return 'Below 10%';
+		return `${value}% reported`;
+	}
+
+	async ensurePresentationCapabilities()
+	{
+		for (const capability of ['presence_battery_band', 'presence_last_event'])
+		{
+			if (!this.hasCapability(capability))
+			{
+				try
+				{
+					await this.addCapability(capability);
+				}
+				catch (err)
+				{
+					this.homey.app.updateLog(`Presence display ${capability}: ${err.message}`, 0, 'hub');
+				}
+			}
+		}
+		if (this.hasCapability('presence_battery_band') && this.getCapabilityValue('presence_battery_band') == null)
+		{
+			await this.setPresentationCapability('presence_battery_band', this.formatBatteryBand(this.getCapabilityValue('measure_battery')));
+		}
+		if (this.hasCapability('presence_last_event') && this.getCapabilityValue('presence_last_event') == null)
+		{
+			await this.setPresentationCapability('presence_last_event', 'No event observed');
+		}
+	}
+
+	async setPresentationCapability(capability, value)
+	{
+		try
+		{
+			if (!this.hasCapability(capability)) await this.addCapability(capability);
+			await this.setCapabilityValue(capability, value);
+		}
+		catch (err)
+		{
+			this.homey.app.updateLog(`Presence display ${capability}: ${err.message}`, 0, 'hub');
+		}
+	}
 
 	parsePresenceState(value)
 	{
@@ -75,6 +123,7 @@ class Presence2HubDevice extends HubDevice
 		{
 			await this.setCapabilityValue('presence_last_report', formatReportTime(previousReport, this.homey));
 		}
+		await this.ensurePresentationCapabilities();
 
 		if (!this.hasCapability('measure_luminance'))
 		{
@@ -205,6 +254,7 @@ class Presence2HubDevice extends HubDevice
 		{
 			if (!this.hasCapability('measure_battery')) await this.addCapability('measure_battery');
 			await this.setCapabilityValue('measure_battery', data.battery);
+			await this.setPresentationCapability('presence_battery_band', this.formatBatteryBand(data.battery));
 		}
 
 		const receivedAt = new Date().toISOString();
@@ -214,6 +264,7 @@ class Presence2HubDevice extends HubDevice
 			if (sampleTime !== null) this._lastWebhookSampleTime = sampleTime;
 			diagnostics.lastWebhookAt = receivedAt;
 			diagnostics.webhookReports = (diagnostics.webhookReports || 0) + 1;
+			await this.setPresentationCapability('presence_last_event', formatReportTime(receivedAt, this.homey));
 		}
 		if (presence !== null)
 		{

@@ -18,7 +18,9 @@
   "capabilities": [
     "alarm_presence",
 	"measure_luminance",
-	"presence_last_report"
+	"presence_battery_band",
+	"presence_last_report",
+	"presence_last_event"
   ],
   "energy": {
     "batteries": [

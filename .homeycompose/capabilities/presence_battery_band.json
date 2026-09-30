@@ -1,0 +1,8 @@
+{
+	"type": "string",
+	"title": { "en": "Battery range (last known)" },
+	"icon": "/assets/battery-band.svg",
+	"getable": true,
+	"setable": false,
+	"uiComponent": "sensor"
+}
