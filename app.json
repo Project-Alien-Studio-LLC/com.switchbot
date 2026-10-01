@@ -538,6 +538,10 @@
     ]
   },
   "api": {
+    "recoverPresenceReceiver": {
+      "method": "post",
+      "path": "/recoverPresenceReceiver/"
+    },
     "getPresenceDiagnostics": {
       "method": "get",
       "path": "/getPresenceDiagnostics/"

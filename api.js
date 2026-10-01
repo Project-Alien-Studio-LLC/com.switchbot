@@ -3,6 +3,17 @@
 'use strict';
 
 module.exports = {
+	async recoverPresenceReceiver({ homey })
+	{
+		const { app } = homey;
+		if (app.homeyWebhookRegistrationRunning) return { accepted: false, reason: 'Registration already running' };
+		const last = Date.parse(app.webhookDiagnostics.lastRecoveryAt || '');
+		if (Date.now() - last < 30 * 60000) return { accepted: false, reason: 'Recovery cooldown' };
+		if (app.homeyWebhook && !app.webhookDiagnostics.lastRegistrationError) return { accepted: false, reason: 'No confirmed receiver fault' };
+		app.webhookDiagnostics.lastRecoveryAt = new Date().toISOString();
+		await app.doWebhookReg();
+		return { accepted: true, receiverPresent: Boolean(app.homeyWebhook), error: app.webhookDiagnostics.lastRegistrationError || null };
+	},
 	async getPresenceDiagnostics({ homey })
 	{
 		const devices = [];
@@ -13,7 +24,17 @@ module.exports = {
 				if (typeof device.getPresenceDiagnostics === 'function') devices.push(device.getPresenceDiagnostics());
 			}
 		}
-		return { generatedAt: new Date().toISOString(), polling: homey.app.hubPollingStatus || null, devices };
+		return {
+			generatedAt: new Date().toISOString(),
+			polling: homey.app.hubPollingStatus || null,
+			webhook: {
+				...homey.app.webhookDiagnostics,
+				registrationInProgress: Boolean(homey.app.homeyWebhookRegistrationRunning),
+				receiverPresent: Boolean(homey.app.homeyWebhook),
+				registeredDeviceIds: [...(homey.app.devicesMACs || [])],
+			},
+			devices,
+		};
 	},
 	async getLog({ homey, query })
 	{

@@ -197,3 +197,21 @@ test('a failed capability write does not poison subsequent reports', async () =>
 	assert.equal(values.measure_luminance, 15);
 	assert.match(values.presence_last_report, /^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d{2} [AP]M$/);
 });
+
+test('diagnostics distinguish source data from rejected samples and retain bounded history', async () => {
+	const { device } = createDevice({ detected: false });
+	const now = Date.now();
+	await device.processWebhookMessage(webhook({ detectionState: 'DETECTED', timeOfSample: now }));
+	await device.processWebhookMessage(webhook({ detectionState: 'NOT_DETECTED', timeOfSample: now - 1000 }));
+	const before = device.getPresenceDiagnostics();
+	assert.equal(before.receivedWebhooks, 2);
+	assert.equal(before.webhookReports, 1);
+	assert.equal(before.recentReports.at(-1).outcome, 'duplicate or older sample');
+	assert.equal(before.queuedReports, 0);
+	for (let i = 0; i < 15; i++) await device.getHubDeviceValues();
+	const after = device.getPresenceDiagnostics();
+	assert.equal(after.lastPolledPresence, false);
+	assert.ok(after.lastPollResponseAt);
+	assert.equal(after.recentReports.length, 12);
+	assert.equal(after.recentReports.at(-1).outcome, 'applied');
+});

@@ -179,6 +179,8 @@ class Presence2HubDevice extends HubDevice
 			{
 				throw new Error('No presence sensor status received');
 			}
+			this._presenceDiagnostics.lastPollResponseAt = new Date().toISOString();
+			this._presenceDiagnostics.lastPolledPresence = this.resolvePresenceState(data);
 			await this.queueReport(data, 'poll', webhookRevision);
 			if (this.resolvePresenceState(data) === null)
 			{
@@ -201,6 +203,9 @@ class Presence2HubDevice extends HubDevice
 			const data = message && message.context;
 			if (data && this.getData().id === data.deviceMac)
 			{
+				this._presenceDiagnostics = this._presenceDiagnostics || {};
+				this._presenceDiagnostics.lastWebhookReceivedAt = new Date().toISOString();
+				this._presenceDiagnostics.receivedWebhooks = (this._presenceDiagnostics.receivedWebhooks || 0) + 1;
 				await this.queueReport(data, 'webhook');
 			}
 		}
@@ -212,10 +217,31 @@ class Presence2HubDevice extends HubDevice
 
 	queueReport(data, source, webhookRevision)
 	{
+		this._presenceDiagnostics = this._presenceDiagnostics || {};
+		const diagnostics = this._presenceDiagnostics;
+		diagnostics.queuedReports = (diagnostics.queuedReports || 0) + 1;
 		// Serialize writes so a slow capability update cannot finish after a newer report.
 		this._reportQueue = (this._reportQueue || Promise.resolve())
 			.catch(() => undefined)
-			.then(() => this.applyReport(data, source, webhookRevision));
+			.then(async () =>
+			{
+				diagnostics.lastApplyStartedAt = new Date().toISOString();
+				try
+				{
+					await this.applyReport(data, source, webhookRevision);
+					diagnostics.lastApplyError = null;
+				}
+				catch (err)
+				{
+					diagnostics.lastApplyError = err.message;
+					throw err;
+				}
+				finally
+				{
+					diagnostics.lastApplyFinishedAt = new Date().toISOString();
+					diagnostics.queuedReports--;
+				}
+			});
 		return this._reportQueue;
 	}
 
@@ -223,8 +249,19 @@ class Presence2HubDevice extends HubDevice
 	{
 		this._presenceDiagnostics = this._presenceDiagnostics || {};
 		const diagnostics = this._presenceDiagnostics;
+		const report = {
+			receivedAt: new Date().toISOString(),
+			source,
+			presence: this.resolvePresenceState(data),
+			lightLevel: Number.isFinite(data.lightLevel) ? data.lightLevel : null,
+			battery: Number.isFinite(data.battery) ? data.battery : null,
+			timeOfSample: data.timeOfSample === undefined ? null : data.timeOfSample,
+			outcome: 'pending',
+		};
+		this._recentReports = [...(this._recentReports || []).slice(-11), report];
 		if (source === 'poll' && webhookRevision !== (this._webhookRevision || 0))
 		{
+			report.outcome = 'superseded poll';
 			diagnostics.supersededPolls = (diagnostics.supersededPolls || 0) + 1;
 			return;
 		}
@@ -232,17 +269,26 @@ class Presence2HubDevice extends HubDevice
 		const presence = this.resolvePresenceState(data);
 		const hasLight = Number.isFinite(data.lightLevel) && data.lightLevel >= 0 && data.lightLevel <= 20;
 		const hasBattery = Number.isFinite(data.battery) && data.battery >= 0 && data.battery <= 100;
-		if (presence === null && !hasLight && !hasBattery) return;
+		if (presence === null && !hasLight && !hasBattery)
+		{
+			report.outcome = 'no valid fields';
+			return;
+		}
 
 		let sampleTime = null;
 		if (source === 'webhook' && data.timeOfSample !== undefined)
 		{
 			sampleTime = Number(data.timeOfSample);
-			if (!Number.isFinite(sampleTime) || sampleTime <= 0) return;
+			if (!Number.isFinite(sampleTime) || sampleTime <= 0)
+			{
+				report.outcome = 'invalid sample time';
+				return;
+			}
 			// SwitchBot sends milliseconds; accept seconds from older webhook producers.
 			if (sampleTime < 100000000000) sampleTime *= 1000;
 			if (sampleTime > Date.now() + 60000 || sampleTime <= (this._lastWebhookSampleTime || 0))
 			{
+				report.outcome = sampleTime > Date.now() + 60000 ? 'future sample' : 'duplicate or older sample';
 				diagnostics.ignoredWebhookSamples = (diagnostics.ignoredWebhookSamples || 0) + 1;
 				return;
 			}
@@ -276,6 +322,7 @@ class Presence2HubDevice extends HubDevice
 			diagnostics.lastError = null;
 			if (source === 'poll') diagnostics.lastSuccessfulPollAt = receivedAt;
 		}
+		report.outcome = 'applied';
 	}
 
 	getPresenceDiagnostics()
@@ -285,6 +332,7 @@ class Presence2HubDevice extends HubDevice
 			name: this.getName(),
 			presence: this.getCapabilityValue('alarm_presence'),
 			...this._presenceDiagnostics,
+			recentReports: this._recentReports || [],
 		};
 	}
 
