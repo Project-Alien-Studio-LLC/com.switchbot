@@ -9,12 +9,20 @@ class LockUltraHubDevice extends LockAdvancedHubDevice
 
 	async onInit()
 	{
-		await super.onInit();
 		// Devices paired before 2.0.94 still carry the deadbolt button.
 		if (this.hasCapability('deadbolt'))
 		{
-			await this.removeCapability('deadbolt').catch(this.error);
+			try
+			{
+				await this.removeCapability('deadbolt');
+				this.homey.app.updateLog('Lock Ultra: removed unused deadbolt capability', 2);
+			}
+			catch (err)
+			{
+				this.homey.app.updateLog(`Lock Ultra: could not remove deadbolt: ${err.message}`, 0);
+			}
 		}
+		await super.onInit();
 	}
 
 	// The Lock Ultra's standard lock control shows and changes the state, so

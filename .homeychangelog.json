@@ -1488,5 +1488,8 @@
 	},
 	"2.0.94": {
 		"en": "Lock Ultra: the main lock control now shows whether the door is locked and toggles it. Removed the unused Deadbolt button; Lock and Unlock remain available in Flows."
+	},
+	"2.0.95": {
+		"en": "Lock Ultra: lock state control now appears on devices paired before 2.0.94, and the unused Deadbolt button is removed reliably."
 	}
 }

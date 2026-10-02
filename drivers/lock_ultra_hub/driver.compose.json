@@ -27,7 +27,8 @@
   "capabilitiesOptions": {
 	"locked": {
     "getable": true,
-    "setable": true
+    "setable": true,
+	  "uiComponent": "toggle"
 	},
 	"lock": {
 	  "uiComponent": null
