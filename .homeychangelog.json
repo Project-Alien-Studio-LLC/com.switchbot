@@ -1491,5 +1491,8 @@
 	},
 	"2.0.95": {
 		"en": "Lock Ultra: lock state control now appears on devices paired before 2.0.94, and the unused Deadbolt button is removed reliably."
+	},
+	"2.0.96": {
+		"en": "Lock Ultra: restore the lock state control on devices that stored it as hidden."
 	}
 }

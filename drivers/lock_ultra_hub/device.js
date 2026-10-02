@@ -23,6 +23,24 @@ class LockUltraHubDevice extends LockAdvancedHubDevice
 			}
 		}
 		await super.onInit();
+		await this.showLockStateControl();
+	}
+
+	// Devices paired before 2.0.94 stored `uiComponent: null` for `locked`,
+	// which app updates do not overwrite; restore the standard lock control.
+	async showLockStateControl()
+	{
+		try
+		{
+			const options = this.getCapabilityOptions('locked') || {};
+			if (options.uiComponent === 'toggle' && options.setable === true) return;
+			await this.setCapabilityOptions('locked', { ...options, setable: true, uiComponent: 'toggle' });
+			this.homey.app.updateLog('Lock Ultra: lock state control restored', 2);
+		}
+		catch (err)
+		{
+			this.homey.app.updateLog(`Lock Ultra: could not restore lock state control: ${err.message}`, 0);
+		}
 	}
 
 	// The Lock Ultra's standard lock control shows and changes the state, so
