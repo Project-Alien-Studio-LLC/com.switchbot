@@ -45,6 +45,12 @@
         "pl": "Drzwi Zacięte",
         "ru": "Дверь Заклинило",
         "ko": "문이 막힘"
+      },
+      "insightsTitleTrue": {
+        "en": "Door jammed"
+      },
+      "insightsTitleFalse": {
+        "en": "Jam cleared"
       }
     },
     "alarm_contact": {
@@ -61,6 +67,12 @@
         "pl": "Drzwi Otwarte",
         "ru": "Дверь Открыта",
         "ko": "문 열림"
+      },
+      "insightsTitleTrue": {
+        "en": "Door opened"
+      },
+      "insightsTitleFalse": {
+        "en": "Door closed"
       }
     }
   },

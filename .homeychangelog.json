@@ -1482,5 +1482,8 @@
 		"pl": "Dodano obsługę Lock Pro Matter Enabled(HUB).",
 		"ru": "Добавлена поддержка Lock Pro Matter Enabled(HUB).",
 		"ko": "Lock Pro Matter Enabled(HUB)에 대한 지원이 추가되었습니다."
+	},
+	"2.0.93": {
+		"en": "Lock Pro/Ultra commands no longer show a Homey timeout when the lock takes longer than 10 seconds to finish. Door events now read Door opened/closed and Door jammed/Jam cleared in device history."
 	}
 }
