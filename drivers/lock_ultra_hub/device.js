@@ -30,12 +30,21 @@ class LockUltraHubDevice extends LockAdvancedHubDevice
 	// which app updates do not overwrite; restore the standard lock control.
 	async showLockStateControl()
 	{
+		if (this.getStoreValue('lockUiRestored_v1')) return;
 		try
 		{
 			const options = this.getCapabilityOptions('locked') || {};
-			if (options.uiComponent === 'toggle' && options.setable === true) return;
+			this.homey.app.updateLog(`Lock Ultra: locked options before restore ${JSON.stringify(options)}`, 0);
 			await this.setCapabilityOptions('locked', { ...options, setable: true, uiComponent: 'toggle' });
-			this.homey.app.updateLog('Lock Ultra: lock state control restored', 2);
+			// Homey only rebuilds the device view when capabilities change.
+			// locked_status keeps no history and no Flow uses it, so re-adding it
+			// is a safe way to trigger that rebuild once.
+			const status = this.getCapabilityValue('locked_status');
+			await this.removeCapability('locked_status');
+			await this.addCapability('locked_status');
+			if (status !== null) await this.setCapabilityValue('locked_status', status);
+			await this.setStoreValue('lockUiRestored_v1', true);
+			this.homey.app.updateLog('Lock Ultra: lock state control restored', 0);
 		}
 		catch (err)
 		{
