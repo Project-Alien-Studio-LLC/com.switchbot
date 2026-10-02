@@ -17,7 +17,6 @@
   "class": "lock",
   "capabilities": [
     "lock",
-	"deadbolt",
 	"unlock",
 	"locked",
 	"locked_status",
@@ -28,7 +27,12 @@
   "capabilitiesOptions": {
 	"locked": {
     "getable": true,
-    "setable": false,
+    "setable": true
+	},
+	"lock": {
+	  "uiComponent": null
+	},
+	"unlock": {
 	  "uiComponent": null
 	},
     "alarm_generic": {
