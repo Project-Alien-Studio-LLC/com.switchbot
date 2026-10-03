@@ -1497,5 +1497,8 @@
 	},
 	"2.0.97": {
 		"en": "Lock Ultra: rebuild the device view once so the lock state control appears."
+	},
+	"2.0.98": {
+		"en": "Lock Pro/Ultra: the lock control always matches the latest reported state, even if reports arrive together or late."
 	}
 }
