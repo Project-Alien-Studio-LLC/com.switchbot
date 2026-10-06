@@ -51,8 +51,13 @@ function createPinnedMailSocket(options, callback)
 const MINIMUM_POLL_INTERVAL = 15; // in Seconds
 const SECONDS_PER_DAY = 86400;
 const DAILY_API_QUOTA = 10000;
-const COMMAND_API_OVERHEAD = 500;
-const POLLING_DAILY_BUDGET = DAILY_API_QUOTA - COMMAND_API_OVERHEAD;
+// Polling is only a backup to webhooks, so it may use half the shared daily
+// quota. The rest covers commands, app restarts (each re-reads every device)
+// and anything else on the same SwitchBot account. With 9,500 for polling the
+// quota ran out on Oct 5 2026 and every command failed with 429 for hours.
+const POLLING_DAILY_BUDGET = Math.floor(DAILY_API_QUOTA * 0.5);
+// After a 429, stop polling for a while instead of spending more rejected calls.
+const RATE_LIMIT_PAUSE_MS = 30 * 60 * 1000;
 const BLE_POLLING_INTERVAL = 30000; // in milliSeconds
 const BLE_ADVERTISEMENT_RATE_LIMIT_MS = 5000;
 const BLE_ADVERTISEMENT_STALE_POLL_MS = 120000;
@@ -205,6 +210,22 @@ class MyApp extends OAuth2App
 			this.apiCallsPersistTimer = null;
 			this.safeSetSetting('apiCalls', this.apiCalls);
 		}, 5000);
+	}
+
+	// Called wherever SwitchBot answers 429 / "Rate Limited".
+	noteRateLimited()
+	{
+		const now = Date.now();
+		if (!(this.rateLimitedUntil > now))
+		{
+			this.updateLog(`SwitchBot rate limit reached (${this.apiCalls} API calls today); pausing hub polling for ${RATE_LIMIT_PAUSE_MS / 60000} minutes`, 0, 'hub');
+		}
+		this.rateLimitedUntil = now + RATE_LIMIT_PAUSE_MS;
+	}
+
+	isRateLimited()
+	{
+		return this.rateLimitedUntil > Date.now();
 	}
 
 	incrementApiCalls(increment = 1)
@@ -2772,6 +2793,15 @@ class MyApp extends OAuth2App
 			this.hubAuthMissingLogged = false;
 		}
 
+		if (this.isRateLimited())
+		{
+			const waitMs = this.rateLimitedUntil - Date.now();
+			this.hubPollingStatus = { ...this.hubPollingStatus, finishedAt: new Date().toISOString(),
+				nextPollAt: new Date(this.rateLimitedUntil).toISOString(), pausedForRateLimit: true };
+			this.timerHubID = this.homey.setTimeout(this.onHubPoll, waitMs);
+			return;
+		}
+
 		let totalHuBDevices = 0;
 
 		const drivers = this.homey.drivers.getDrivers();
@@ -2780,6 +2810,11 @@ class MyApp extends OAuth2App
 			const devices = driver.getDevices();
 			for (const device of Object.values(devices))
 			{
+				if (this.isRateLimited())
+				{
+					// Quota hit mid-cycle: stop spending rejected calls on the rest.
+					break;
+				}
 				if (device.pollHubDeviceValues)
 				{
 					try
@@ -2797,6 +2832,15 @@ class MyApp extends OAuth2App
 					}
 				}
 			}
+		}
+
+		if (this.isRateLimited())
+		{
+			// Always resume after the pause, even if no device finished this cycle.
+			this.hubPollingStatus = { ...this.hubPollingStatus, finishedAt: new Date().toISOString(),
+				nextPollAt: new Date(this.rateLimitedUntil).toISOString(), pausedForRateLimit: true };
+			this.timerHubID = this.homey.setTimeout(this.onHubPoll, this.rateLimitedUntil - Date.now());
+			return;
 		}
 
 		if (totalHuBDevices > 0)

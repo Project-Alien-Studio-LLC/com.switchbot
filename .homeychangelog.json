@@ -1500,5 +1500,8 @@
 	},
 	"2.0.98": {
 		"en": "Lock Pro/Ultra: the lock control always matches the latest reported state, even if reports arrive together or late."
+	},
+	"2.0.99": {
+		"en": "Polling now uses at most half of the SwitchBot daily API quota, leaving room for commands, and pauses for 30 minutes when SwitchBot reports a rate limit instead of retrying."
 	}
 }
