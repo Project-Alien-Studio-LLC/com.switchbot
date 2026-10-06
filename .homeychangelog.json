@@ -1503,5 +1503,8 @@
 	},
 	"2.0.99": {
 		"en": "Polling now uses at most half of the SwitchBot daily API quota, leaving room for commands, and pauses for 30 minutes when SwitchBot reports a rate limit instead of retrying."
+	},
+	"2.0.100": {
+		"en": "Sends one Homey notification per day when SwitchBot cloud API use reaches 8,000 of the 10,000 daily calls."
 	}
 }

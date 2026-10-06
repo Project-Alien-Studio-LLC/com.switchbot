@@ -58,6 +58,8 @@ const DAILY_API_QUOTA = 10000;
 const POLLING_DAILY_BUDGET = Math.floor(DAILY_API_QUOTA * 0.5);
 // After a 429, stop polling for a while instead of spending more rejected calls.
 const RATE_LIMIT_PAUSE_MS = 30 * 60 * 1000;
+// Timeline/push warning threshold for the shared daily quota.
+const QUOTA_WARNING_CALLS = 8000;
 const BLE_POLLING_INTERVAL = 30000; // in milliSeconds
 const BLE_ADVERTISEMENT_RATE_LIMIT_MS = 5000;
 const BLE_ADVERTISEMENT_STALE_POLL_MS = 120000;
@@ -234,7 +236,22 @@ class MyApp extends OAuth2App
 		const step = Number.isFinite(value) && (value > 0) ? value : 1;
 		this.apiCalls = this.toPositiveInteger(this.apiCalls, 0) + step;
 		this.persistApiCalls();
+		this.maybeWarnQuotaLow();
 		return this.apiCalls;
+	}
+
+	// Warn once per day, before commands start failing, when the shared
+	// SwitchBot quota is running low.
+	maybeWarnQuotaLow()
+	{
+		if (this.apiCalls < QUOTA_WARNING_CALLS || this.quotaWarningSent) return;
+		this.quotaWarningSent = true;
+		const text = `SwitchBot has used ${this.apiCalls} of ${DAILY_API_QUOTA} cloud API calls today. `
+			+ 'SwitchBot commands will fail if the daily limit is reached.';
+		this.updateLog(text, 0, 'hub');
+		Promise.resolve()
+			.then(() => this.homey.notifications.createNotification({ excerpt: text }))
+			.catch((err) => this.updateLog(`Could not send quota warning: ${err.message}`, 0, 'hub'));
 	}
 
 	formatRateLimitErrorMessage(message)
@@ -1214,6 +1231,7 @@ class MyApp extends OAuth2App
 	resetAPICount()
 	{
 		this.apiCalls = 0;
+		this.quotaWarningSent = false;
 		this.persistApiCalls(true);
 
 		// Set timer to reset the count at midnight
