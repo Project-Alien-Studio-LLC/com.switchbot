@@ -1,0 +1,27 @@
+{
+  "title": {
+    "en": "Night latch unlock",
+    "no": "Lås opp nattlås",
+    "nl": "Nachtslot ontgrendelen",
+    "da": "Lås natlås op",
+    "de": "Nachtriegel entriegeln",
+    "es": "Desbloquear pestillo nocturno",
+    "fr": "Déverrouiller le verrou de nuit",
+    "it": "Sblocca chiavistello notturno",
+    "sv": "Lås upp nattlås",
+    "pl": "Odblokuj zasuwę nocną",
+    "ru": "Разблокировать ночной замок",
+    "ko": "나이트 래치 잠금 해제"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=lock_pro_matter_hub"
+    }
+  ],
+  "platforms": [
+    "local",
+    "cloud"
+  ]
+}

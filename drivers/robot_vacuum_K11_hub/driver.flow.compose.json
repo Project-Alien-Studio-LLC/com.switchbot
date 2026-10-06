@@ -1,0 +1,56 @@
+{
+  "actions": [
+    {
+      "id": "k11_run_schedule",
+      "title": { "en": "Run room schedule with safety checks" },
+      "titleFormatted": { "en": "[[schedule]]: [[decision]], scene [[scene]] at [[time]] on weekdays [[days]]" },
+      "hint": { "en": "Run if safe requires at least 30 minutes away. Quiet morning permits the approved 05:00 morning scene at home or away. Every run still requires the configured time/day, fresh online status, idle robot and 30% battery. Reserves each daily slot once; no retry." },
+      "args": [
+        { "name": "schedule", "type": "text", "title": { "en": "Stable schedule key" } },
+        { "name": "scene", "type": "autocomplete", "title": { "en": "Paired vacuum scene" } },
+        { "name": "time", "type": "time", "title": { "en": "Approved local time" } },
+        { "name": "days", "type": "text", "title": { "en": "Weekdays (0=Sun, comma-separated)" } },
+        { "name": "decision", "type": "dropdown", "title": { "en": "Decision" }, "values": [
+          { "id": "run", "label": { "en": "Run if safe" } },
+          { "id": "home", "label": { "en": "Skip because I am home" } },
+          { "id": "quiet_morning", "label": { "en": "05:00 Quiet morning at home or away" } }
+        ] }
+      ]
+    },
+    {
+      "id": "k11_schedule_control",
+      "title": { "en": "Set vacuum schedule control" },
+      "titleFormatted": { "en": "[[control]]" },
+      "hint": { "en": "Changes schedules only; never starts, pauses or docks the robot. Skip resets at the next configured slot, including a presence or master-pause skip." },
+      "args": [{ "name": "control", "type": "dropdown", "title": { "en": "Control" }, "values": [
+        { "id": "skip", "label": { "en": "Skip next cleaning" } },
+        { "id": "unskip", "label": { "en": "Cancel skip next cleaning" } },
+        { "id": "pause", "label": { "en": "Pause all vacuum schedules" } },
+        { "id": "resume", "label": { "en": "Resume vacuum schedules" } }
+      ] }]
+    },
+    {
+      "id": "k11_presence_state",
+      "title": { "en": "Record vacuum presence state" },
+      "titleFormatted": { "en": "Record [[presence]] for scheduled cleaning" },
+      "hint": { "en": "Use only from Homey's user-enter and user-leave Flows. Away time must remain continuous for at least 30 minutes before any scheduled cleaning can start." },
+      "args": [{ "name": "presence", "type": "dropdown", "title": { "en": "Presence" }, "values": [
+        { "id": "away", "label": { "en": "Away" } },
+        { "id": "home", "label": { "en": "Home" } }
+      ] }]
+    },
+    { "id": "k11_start_room", "title": { "en": "Start verified room scene safely" }, "hint": { "en": "Requires fresh online status, at least 30% battery and an idle robot. Uses only the configured native vacuum scene; no whole-home fallback." } },
+    { "id": "k11_start_scheduled_room", "title": { "en": "Start daily room cleaning with safeguards" }, "hint": { "en": "Also requires an approved physical test, armed schedule, outside quiet hours, and no prior automatic request today. No automatic retry." } }
+  ],
+  "triggers": [
+    { "id": "k11_run_event", "title": { "en": "A scheduled cleaning status changes" }, "tokens": [
+      { "name": "schedule", "type": "string", "title": { "en": "Schedule" } },
+      { "name": "stage", "type": "string", "title": { "en": "Stage" } },
+      { "name": "message", "type": "string", "title": { "en": "Message" } }
+    ] },
+    { "id": "k11_attention", "title": { "en": "K11+ needs attention" }, "tokens": [
+      { "name": "message", "type": "string", "title": { "en": "Message" } },
+      { "name": "reason", "type": "string", "title": { "en": "Reason" } }
+    ] }
+  ]
+}

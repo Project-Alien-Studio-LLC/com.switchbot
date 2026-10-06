@@ -4,201 +4,10 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>SwitchBot Settings</title>
+	<title data-i18n="settings.pageTitle">SwitchBot Settings</title>
 	<link rel="stylesheet" type="text/css" href="lwsa.css">
 	<link rel="stylesheet" type="text/css" href="busy_indicator.css" />
-
-	<style type="text/css">
-		.fog_div {
-			display: none;
-			position: fixed;
-			top: 0px;
-			left: 0px;
-			height: 100%;
-			width: 100%;
-			z-index: 100;
-			background-color: rgba(30, 30, 30, 0.5);
-		}
-
-			#statistics {
-				height: calc(100vh - 110px);
-				min-height: 280px;
-				width: 100%;
-				max-width: 100%;
-				box-sizing: border-box;
-			}
-
-			#statistics fieldset {
-				display: flex;
-				flex-direction: column;
-				height: calc(100% - 10px);
-				overflow: hidden;
-				min-height: 0;
-				min-width: 0;
-				max-width: 100%;
-				box-sizing: border-box;
-				margin: 0;
-			}
-
-			#statistics .statistics-scroll {
-				flex: 1 1 auto;
-				overflow-x: auto;
-				overflow-y: auto;
-				height: calc(100% - 24px);
-				max-height: calc(100% - 24px);
-				min-height: 340px;
-				border: 1px solid rgba(0,0,0,0.12);
-				border-radius: 4px;
-				display: block;
-				position: relative;
-				scrollbar-gutter: stable;
-				min-width: 0;
-				max-width: 100%;
-				scrollbar-width: thin;
-				box-sizing: border-box;
-				align-self: stretch;
-			}
-
-			#statistics .statistics-scroll::-webkit-scrollbar {
-				width: 10px;
-				height: 10px;
-			}
-
-			#statistics .statistics-scroll::-webkit-scrollbar-thumb {
-				background-color: rgba(74, 110, 155, 0.45);
-				border-radius: 8px;
-			}
-
-			#statistics .statistics-scroll::-webkit-scrollbar-track {
-				background: rgba(0, 0, 0, 0.05);
-			}
-
-			#bleStatisticsTable {
-				border-collapse: collapse;
-				table-layout: fixed;
-				width: 1120px;
-				min-width: 1120px;
-			}
-
-			#bleStatisticsTable thead {
-				position: sticky;
-				top: 0;
-				z-index: 3;
-			}
-
-			#bleStatisticsTable thead th {
-				background: #edf2f8;
-				z-index: 3;
-				text-align: left;
-				border-bottom: 1px solid rgba(0,0,0,0.12);
-				padding: 6px 8px;
-			}
-
-			#bleStatisticsTable thead th.sortable {
-				cursor: pointer;
-				-webkit-user-select: none;
-				user-select: none;
-			}
-
-			#bleStatisticsTable thead tr:nth-child(2) th {
-				border-top: 1px solid rgba(0,0,0,0.12);
-			}
-
-			#bleStatisticsTable thead tr:nth-child(2) th:nth-child(9) {
-				white-space: nowrap;
-			}
-
-			#bleStatisticsTable td {
-				padding: 6px 8px;
-				background: white;
-				border-bottom: 1px solid rgba(0,0,0,0.08);
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-			}
-
-			#bleStatisticsTable td:nth-child(4) {
-				text-align: right;
-			}
-
-			#bleStatisticsTable td:nth-child(9) {
-				overflow: visible;
-				text-overflow: clip;
-			}
-
-			#bleStatisticsTable td:nth-child(4),
-			#bleStatisticsTable td:nth-child(5),
-			#bleStatisticsTable td:nth-child(6),
-			#bleStatisticsTable td:nth-child(7),
-			#bleStatisticsTable td:nth-child(8) {
-				text-align: right;
-			}
-
-		.oauth-login-button {
-			display: none;
-			background-color: #0066cc;
-		}
-
-		.debug-send-button {
-			background-color: #0f9e16;
-			color: #ffffff;
-			margin: 5px 20px 5px 5px;
-		}
-
-		.debug-clear-button {
-			background-color: #a5510d;
-			color: #ffffff;
-			margin: 5px 20px 5px 5px;
-		}
-
-		.detected-actions {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 8px;
-			align-items: center;
-		}
-
-		.auth-warning-banner {
-			display: none;
-			margin: 12px 0;
-			padding: 10px 12px;
-			border-radius: 6px;
-			border: 1px solid #f0ad4e;
-			background-color: #fff7e6;
-			color: #8a5a00;
-		}
-
-		.auth-warning-actions {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 8px;
-			margin-top: 8px;
-		}
-
-		.statistics-actions {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: 8px;
-			margin: 0 0 8px 0;
-		}
-
-		.statistics-actions p {
-			margin: 0;
-		}
-
-		.statistics-actions > div {
-			display: flex;
-			gap: 8px;
-		}
-
-		#bleStatisticsTable,
-		#bleStatisticsTable th,
-		#bleStatisticsTable td {
-			-webkit-user-select: text;
-			user-select: text;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="settings.css" />
 
 	<!-- The '/homey.js' script must be included in your settings view to work -->
 	<script type="text/javascript" src="/homey.js" data-origin="settings"></script>
@@ -211,15 +20,24 @@
 		<div></div>
 	</div>
 
+	<!-- Device mode switch -->
+	<div class="mode-switch">
+		<label for="modeHub"><input type="radio" name="deviceMode" id="modeHub" value="hub" checked title="settings.modeHub" aria-label="settings.modeHub" /> <span data-i18n="settings.modeHub"></span></label>
+		<label for="modeBLE"><input type="radio" name="deviceMode" id="modeBLE" value="ble" title="settings.modeBLE" aria-label="settings.modeBLE" /> <span data-i18n="settings.modeBLE"></span></label>
+	</div>
+
 	<!-- Tab links -->
 	<div class="tab">
-		<button class="tablinks" onclick="setPage(event, 'appSettings')" id="appSettingsTab" data-i18n="settings.tabAppSettings" title="settings.tabAppSettings"></button>
-		<button class="tablinks" onclick="setPage(event, 'statistics')" id="statisticsTab">Statistics</button>
-		<button class="tablinks" onclick="setPage(event, 'detected')" id="defaultOpen" data-i18n="settings.tabDetected" title="settings.tabDetected"></button>
-		<button class="tablinks" onclick="setPage(event, 'log')" data-i18n="settings.tabLog" title="settings.tabLog"></button>
-		<button class="tablinks" onclick="setPage(event, 'status')" id="deviceStatusTab" data-i18n="settings.tabGetStatus" title="settings.tabGetStatus"></button>
-		<button class="tablinks" onclick="setPage(event, 'oldSettings')" id="oldSettingsTab" data-i18n="settings.tabOldSettings" title="settings.tabOldSettings"></button>
-		<button class="tablinks sim-log-tab-hidden" onclick="setPage(event, 'simulator')" id="simLogTab" data-i18n="settings.tabSimulationData" title="settings.tabSimulationData"></button>
+		<button class="tablinks" onclick="setPage(event, 'appSettings')" id="appSettingsTab" data-mode="hub" data-i18n="settings.tabAppSettings" title="settings.tabAppSettings"></button>
+		<button class="tablinks" onclick="setPage(event, 'statistics')" id="statisticsTab" data-mode="ble" data-i18n="settings.tabStatistics" title="settings.tabStatistics"></button>
+		<button class="tablinks" onclick="setPage(event, 'detected')" id="defaultOpen" data-mode="hub" data-i18n="settings.tabDetected" title="settings.tabDetected"></button>
+		<button class="tablinks" onclick="setPage(event, 'bleDevices')" id="bleDevicesTab" data-mode="ble" data-i18n="settings.tabBLEDevices" title="settings.tabBLEDevices"></button>
+		<button class="tablinks" onclick="setPage(event, 'bleSettings')" id="bleSettingsTab" data-mode="ble" data-i18n="settings.tabBLESettings" title="settings.tabBLESettings"></button>
+		<button class="tablinks" onclick="setPage(event, 'log')" id="logTab" data-mode="both" data-i18n="settings.tabLog" title="settings.tabLog"></button>
+		<button class="tablinks" onclick="setPage(event, 'status')" id="deviceStatusTab" data-mode="hub" data-i18n="settings.tabGetStatus" title="settings.tabGetStatus"></button>
+		<button class="tablinks" onclick="setPage(event, 'oldSettings')" id="oldSettingsTab" data-mode="hub" data-i18n="settings.tabOldSettings" title="settings.tabOldSettings"></button>
+		<button class="tablinks" onclick="setPage(event, 'driverSupport')" id="driverSupportTab" data-mode="both" data-i18n="settings.tabDriverSupport" title="settings.tabDriverSupport"></button>
+		<button class="tablinks sim-log-tab-hidden" onclick="setPage(event, 'simulator')" id="simLogTab" data-mode="both" data-i18n="settings.tabSimulationData" title="settings.tabSimulationData"></button>
 	</div>
 
 	<div id="globalAuthWarning" class="auth-warning-banner" role="alert" aria-live="polite">
@@ -236,7 +54,7 @@
 		<fieldset>
 			<div class="field row">
 				<label class="homey-form-label" for="numConnections"><span data-i18n="settings.numConnections"></span></label>
-				<input class="homey-form-input" id="numConnections" type="number" min="1" value="1" title="Number of connections" aria-label="Number of connections" />
+				<input class="homey-form-input" id="numConnections" type="number" min="1" value="1" title="settings.numConnections" aria-label="settings.numConnections" />
 			</div>
 			<p></p>
 			<p>
@@ -249,46 +67,56 @@
 	<div id="statistics" class="tabcontent">
 		<fieldset>
 			<div class="statistics-actions">
-				<p>Live BLE service-data statistics for the registered devices.</p>
+				<p data-i18n="settings.statisticsDescription"></p>
 				<div>
-					<button id="clearBLEStatistics" class="homey-button-small" type="button">Clear Stats</button>
-					<button id="copyBLEStatistics" class="homey-button-small" type="button">Copy Table</button>
+					<button id="clearBLEStatistics" class="homey-button-small" type="button" data-i18n="settings.clearStatistics" title="settings.clearStatistics"></button>
+					<button id="copyBLEStatistics" class="homey-button-small" type="button" data-i18n="settings.copyTable" title="settings.copyTable"></button>
 				</div>
+			</div>
+			<div class="rssi-legend">
+				<span data-i18n="settings.rssiLegendTitle"></span>
+				<span class="rssi-legend-item rssi-poor"><span class="rssi-legend-swatch"></span><span data-i18n="settings.rssiLegendPoor"></span></span>
+				<span class="rssi-legend-item rssi-low"><span class="rssi-legend-swatch"></span><span data-i18n="settings.rssiLegendLow"></span></span>
+				<span class="rssi-legend-item rssi-ok"><span class="rssi-legend-swatch"></span><span data-i18n="settings.rssiLegendOk"></span></span>
+				<span class="rssi-legend-item rssi-good"><span class="rssi-legend-swatch"></span><span data-i18n="settings.rssiLegendGood"></span></span>
 			</div>
 			<div class="statistics-scroll" style="padding: 0;">
 				<table id="bleStatisticsTable">
 					<colgroup>
-						<col style="width: 17%;" />
-						<col style="width: 14%;" />
-						<col style="width: 13%;" />
-						<col style="width: 8%;" />
-						<col style="width: 8%;" />
-						<col style="width: 10%;" />
-						<col style="width: 8%;" />
+						<col style="width: 15%;" />
+						<col style="width: 15%;" />
+						<col style="width: 15%;" />
+						<col style="width: 7%;" />
+						<col style="width: 7%;" />
+						<col style="width: 9%;" />
+						<col style="width: 7%;" />
+						<col style="width: 7%;" />
 						<col style="width: 6%;" />
-						<col style="width: 16%;" />
+						<col style="width: 13%;" />
 					</colgroup>
 					<thead>
 						<tr>
-							<th class="sortable" data-sort-key="name">Device</th>
-							<th class="sortable" data-sort-key="mac">MAC</th>
-							<th class="sortable" data-sort-key="driverType">Driver</th>
-							<th colspan="2" style="text-align:center;">Service Data</th>
-							<th class="sortable" data-sort-key="advertisements" style="text-align:right;">Adverts</th>
-							<th class="sortable" data-sort-key="polls" style="text-align:right;">Polled</th>
-							<th class="sortable" data-sort-key="rssi" style="text-align:right;">RSSI</th>
-							<th class="sortable" data-sort-key="lastSeenAt">Last Seen</th>
+							<th class="sortable" data-sort-key="name" data-i18n="settings.device"></th>
+							<th class="sortable" data-sort-key="mac" data-i18n="settings.mac"></th>
+							<th class="sortable" data-sort-key="driverType" data-i18n="settings.driver"></th>
+							<th colspan="2" style="text-align:center;" data-i18n="settings.serviceData"></th>
+							<th class="sortable" data-sort-key="advertisements" style="text-align:right;" data-i18n="settings.advertisements"></th>
+							<th class="sortable" data-sort-key="polls" style="text-align:right;" data-i18n="settings.polled"></th>
+							<th class="sortable" data-sort-key="errors" style="text-align:right;" data-i18n="settings.errors"></th>
+							<th class="sortable" data-sort-key="rssi" style="text-align:right;" data-i18n="settings.rssi"></th>
+							<th class="sortable" data-sort-key="lastSeenAt" data-i18n="settings.lastSeen"></th>
 						</tr>
 						<tr>
 							<th></th>
 							<th></th>
 							<th></th>
-							<th class="sortable" data-sort-key="missing" style="text-align:right;">Missing</th>
-							<th class="sortable" data-sort-key="present" style="text-align:right;">Present</th>
+							<th class="sortable" data-sort-key="missing" style="text-align:right;" data-i18n="settings.missing"></th>
+							<th class="sortable" data-sort-key="present" style="text-align:right;" data-i18n="settings.present"></th>
 							<th></th>
 							<th></th>
-							<th style="text-align:right;">dBm</th>
-							<th>HH:MM:SS ago</th>
+							<th></th>
+							<th style="text-align:right;" data-i18n="settings.dbm"></th>
+							<th data-i18n="settings.elapsedTime"></th>
 						</tr>
 					</thead>
 					<tbody></tbody>
@@ -300,18 +128,113 @@
 	<!-- detected-->
 	<div id="detected" class="tabcontent">
 		<fieldset>
-			<p id="oAuthStatusMessage" class="oauth-status-message">
-				<strong data-i18n="settings.oauthMissingSessionTitle"></strong> <span data-i18n="settings.oauthMissingSessionText"></span>
-			</p>
+			<div id="bleOnlyNotice" class="auth-warning-banner" role="note">
+				<span data-i18n="settings.bleOnlyDetectedNotice"></span>
+				<div class="auth-warning-actions">
+					<button id="goToStatisticsTab" class="homey-button-small" data-i18n="settings.tabBLEDevices" title="settings.tabBLEDevices"></button>
+				</div>
+			</div>
 			<p class="detected-actions">
-				<button id="loginWithOAuth" class="homey-button-small oauth-login-button" data-i18n="settings.loginWithSwitchBot" title="Login with SwitchBot Account"></button>
-				<button id="getDeviceLog" class="homey-button-small" data-i18n="settings.getDevices" title="Get HUB Devices"></button>
-				<button id="clearDeviceLog" class="homey-button-small" data-i18n="settings.clear" title="Clear Log"></button>
-				<button id="sendDeviceLog" class="homey-button-small" data-i18n="settings.send" title="Send Log"></button>
+				<button id="getDeviceLog" class="homey-button-small" data-i18n="settings.getDevices" title="settings.getDevices"></button>
+				<button id="clearDeviceLog" class="homey-button-small" data-i18n="settings.clear" title="settings.clear"></button>
+				<button id="sendDeviceLog" class="homey-button-small" data-i18n="settings.send" title="settings.send"></button>
 			</p>
 			<div class="field row">
-				<textarea id="detectedDevices" class="homey-form-textarea" wrap="off" title="Detected devices"></textarea>
+				<textarea id="detectedDevices" class="homey-form-textarea" wrap="off" title="settings.detectedDevices" aria-label="settings.detectedDevices"></textarea>
 			</div>
+		</fieldset>
+	</div>
+
+	<!-- BLE DEVICES PAGE -->
+	<div id="bleDevices" class="tabcontent">
+		<fieldset>
+			<div class="statistics-actions">
+				<p data-i18n="settings.bleDevicesDescription"></p>
+				<div>
+					<button id="scanForBLEDevices" class="homey-button-small" type="button" data-i18n="settings.scanForBLEDevices" title="settings.scanForBLEDevices"></button>
+					<label for="recordAllBLEDevices"><input type="checkbox" id="recordAllBLEDevices" title="settings.recordAllBLEDevices" aria-label="settings.recordAllBLEDevices" /> <span data-i18n="settings.recordAllBLEDevices"></span></label>
+				</div>
+			</div>
+			<div class="rssi-legend">
+				<span data-i18n="settings.rssiLegendTitle"></span>
+				<span class="rssi-legend-item rssi-poor"><span class="rssi-legend-swatch"></span><span data-i18n="settings.rssiLegendPoor"></span></span>
+				<span class="rssi-legend-item rssi-low"><span class="rssi-legend-swatch"></span><span data-i18n="settings.rssiLegendLow"></span></span>
+				<span class="rssi-legend-item rssi-ok"><span class="rssi-legend-swatch"></span><span data-i18n="settings.rssiLegendOk"></span></span>
+				<span class="rssi-legend-item rssi-good"><span class="rssi-legend-swatch"></span><span data-i18n="settings.rssiLegendGood"></span></span>
+			</div>
+			<div class="statistics-scroll" style="padding: 0;">
+				<table id="bleDetectedTable">
+					<colgroup>
+						<col style="width: 24%;" />
+						<col style="width: 26%;" />
+						<col style="width: 10%;" />
+						<col style="width: 30%;" />
+						<col style="width: 10%;" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th class="sortable" data-sort-key="modelName" data-i18n="settings.bleDeviceModel"></th>
+							<th class="sortable" data-sort-key="address" data-i18n="settings.mac"></th>
+							<th class="sortable" data-sort-key="rssi" style="text-align:right;" data-i18n="settings.rssi"></th>
+							<th class="sortable" data-sort-key="matchedDriverName" data-i18n="settings.bleDeviceMatchedDriver"></th>
+							<th class="sortable" data-sort-key="isInstalled" style="text-align:right;" data-i18n="settings.bleDeviceInstalled"></th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+
+			<div id="allBLEDevicesSection" class="all-ble-section">
+				<div class="statistics-actions">
+					<p data-i18n="settings.allBLEDevicesDescription"></p>
+					<div>
+						<button id="clearAllBLEDevices" class="homey-button-small" type="button" data-i18n="settings.clearRecordedDevices" title="settings.clearRecordedDevices"></button>
+						<button id="copyAllBLEDevices" class="homey-button-small" type="button" data-i18n="settings.copyTable" title="settings.copyTable"></button>
+					</div>
+				</div>
+				<div class="statistics-scroll">
+					<table id="allBLEDevicesTable">
+						<colgroup>
+							<col style="width: 23%;" />
+							<col style="width: 19%;" />
+							<col style="width: 8%;" />
+							<col style="width: 9%;" />
+							<col style="width: 8%;" />
+							<col style="width: 11%;" />
+							<col style="width: 14%;" />
+							<col style="width: 8%;" />
+						</colgroup>
+						<thead>
+							<tr>
+								<th class="sortable" data-sort-key="address" data-i18n="settings.mac"></th>
+								<th class="sortable" data-sort-key="localName" data-i18n="settings.bleLocalName"></th>
+								<th class="sortable" data-sort-key="rssi" style="text-align:right;" data-i18n="settings.rssi"></th>
+								<th class="sortable" data-sort-key="isSwitchBot" data-i18n="settings.bleIsSwitchBot"></th>
+								<th class="sortable" data-sort-key="isInstalled" data-i18n="settings.blePaired"></th>
+								<th class="sortable" data-sort-key="subscribed" data-i18n="settings.bleSubscribed"></th>
+								<th class="sortable" data-sort-key="reason" data-i18n="settings.bleRecordReason"></th>
+								<th class="sortable" data-sort-key="seenCount" style="text-align:right;" data-i18n="settings.bleSeenCount"></th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</fieldset>
+	</div>
+
+	<!-- BLE SETTINGS PAGE -->
+	<div id="bleSettings" class="tabcontent">
+		<fieldset>
+			<p data-i18n="settings.bleSettingsDescription"></p>
+			<div class="field row">
+				<label for="bleAdvertisementsEnabled">
+					<input type="checkbox" id="bleAdvertisementsEnabled" title="settings.bleAdvertisementsEnabled" aria-label="settings.bleAdvertisementsEnabled" />
+					<span data-i18n="settings.bleAdvertisementsEnabled"></span>
+				</label>
+			</div>
+			<p class="ble-settings-hint" data-i18n="settings.bleAdvertisementsHint"></p>
+			<p id="bleAdvertisementsStatus" class="ble-settings-status"></p>
 		</fieldset>
 	</div>
 
@@ -320,34 +243,60 @@
 		<fieldset>
 			<p><span data-i18n="settings.diagnosticsLog"></span>
 			</p>
-			<div class="field row">
-				<label class="homey-form-label" for="logLevel"><span data-i18n="settings.logLevel"></span></label>
-				<select class="homey-form-select" id="logLevel" title="Log level" aria-label="Log level">
-					<option value=0 data-i18n="settings.logErrorsOnly"></option>
-					<option value=1 data-i18n="settings.logWebhookInfo"></option>
-					<option value=2 data-i18n="settings.logBasicInfo"></option>
-					<option value=3 data-i18n="settings.logDetailedInfo"></option>
-					<option value=4 data-i18n="settings.logFullInfo"></option>
-				</select>
-				<P></P>
-			</div>
-			<div class="field row">
-				<label class="homey-form-label" for="logSource"><span data-i18n="settings.logSource"></span></label>
-				<select class="homey-form-select" id="logSource" title="Log source" aria-label="Log source">
-					<option value="all" data-i18n="settings.logSourceAll"></option>
-					<option value="ble" data-i18n="settings.logSourceBLE"></option>
-					<option value="hub" data-i18n="settings.logSourceHub"></option>
-				</select>
-				<P></P>
+			<div class="log-settings-bar">
+				<div id="logSettingsSummary" class="log-settings-summary"></div>
+				<button id="openLogSettings" class="homey-button-small" type="button" data-i18n="settings.logSettings" title="settings.logSettings"></button>
 			</div>
 			<p>
-				<button id="clearInfoLog" class="homey-button-small" data-i18n="settings.clear" title="Clear Log"></button>
-				<button id="sendInfoLog" class="homey-button-small" data-i18n="settings.send" title="Send Log"></button>
+				<button id="clearInfoLog" class="homey-button-small" data-i18n="settings.clear" title="settings.clear"></button>
+				<button id="sendInfoLog" class="homey-button-small" data-i18n="settings.send" title="settings.send"></button>
 			</p>
 			<div class="field row">
-				<textarea id="infoLog" class="homey-form-textarea" wrap="off" title="Diagnostics log"></textarea>
+				<textarea id="infoLog" class="homey-form-textarea" wrap="off" title="settings.diagnosticsLog" aria-label="settings.diagnosticsLog"></textarea>
 			</div>
 		</fieldset>
+		<div id="logSettingsModal" class="log-settings-modal" role="dialog" aria-modal="true" aria-labelledby="logSettingsTitle">
+			<div class="log-settings-panel">
+				<h2 id="logSettingsTitle" data-i18n="settings.logSettings"></h2>
+				<div class="field row">
+					<label class="homey-form-label" for="logLevel"><span data-i18n="settings.logLevel"></span></label>
+					<select class="homey-form-select" id="logLevel" title="settings.logLevel" aria-label="settings.logLevel">
+						<option value="0" data-i18n="settings.logErrorsOnly"></option>
+						<option value="1" data-i18n="settings.logWebhookInfo"></option>
+						<option value="2" data-i18n="settings.logBasicInfo"></option>
+						<option value="3" data-i18n="settings.logDetailedInfo"></option>
+						<option value="4" data-i18n="settings.logFullInfo"></option>
+					</select>
+				</div>
+				<div class="field row">
+					<label class="homey-form-label" for="logSource"><span data-i18n="settings.logSource"></span></label>
+					<select class="homey-form-select" id="logSource" title="settings.logSource" aria-label="settings.logSource">
+						<option value="all" data-i18n="settings.logSourceAll"></option>
+						<option value="ble" data-i18n="settings.logSourceBLE"></option>
+						<option value="hub" data-i18n="settings.logSourceHub"></option>
+					</select>
+				</div>
+				<div class="field row">
+					<label class="homey-form-label" for="logFilterType" data-i18n="settings.logFilterType"></label>
+					<select class="homey-form-select" id="logFilterType" title="settings.logFilterType" aria-label="settings.logFilterType">
+						<option value="none" data-i18n="settings.allData"></option>
+						<option id="logFilterIdentifierOption" value="identifier" data-i18n="settings.bleMacDeviceId"></option>
+						<option value="switchBotName" data-i18n="settings.switchBotDeviceName"></option>
+						<option value="homeyName" data-i18n="settings.homeyDeviceName"></option>
+						<option value="deviceType" data-i18n="settings.deviceType"></option>
+					</select>
+				</div>
+				<div class="field row">
+					<label class="homey-form-label" id="logFilterValueLabel" for="logFilterValue" data-i18n="settings.logFilterValue"></label>
+					<select class="log-filter-value-select" id="logFilterValue" title="settings.logFilterValue" aria-label="settings.logFilterValue" tabindex="-1"></select>
+					<div class="log-filter-value-list" id="logFilterValueList" aria-labelledby="logFilterValueLabel"></div>
+				</div>
+				<div class="log-settings-actions">
+					<button id="cancelLogSettings" class="homey-button-small" type="button" data-i18n="settings.cancel"></button>
+					<button id="saveLogSettings" class="homey-button-small" type="button" data-i18n="settings.save"></button>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<!--SEND COMMAND PAGE -->
@@ -358,7 +307,7 @@
 					class="debug-send-button" data-i18n="settings.send" title="settings.send"></button><button
 					id="clearSend" class="debug-clear-button" data-i18n="settings.clear" title="settings.clear"></button></p>
 			<div class="field row">
-				<textarea id="sendResponse" class="homey-form-textarea" wrap="off" title="Send command response"></textarea>
+				<textarea id="sendResponse" class="homey-form-textarea" wrap="off" title="settings.sendCommandResponse" aria-label="settings.sendCommandResponse"></textarea>
 			</div>
 		</fieldset>
 	</div>
@@ -370,7 +319,7 @@
 			<p><button id="useSim" class="homey-button-small" data-i18n="settings.activate" title="settings.activate"></button><button id="clearSim"
 					class="debug-clear-button" data-i18n="settings.clearSim" title="settings.clearSim"></button></p>
 			<div class="field row">
-				<textarea id="simData" class="homey-form-textarea" wrap="off" title="Simulation data"></textarea>
+				<textarea id="simData" class="homey-form-textarea" wrap="off" title="settings.simulationData" aria-label="settings.simulationData"></textarea>
 			</div>
 		</fieldset>
 	</div>
@@ -390,7 +339,7 @@
 				<button id="sendStatusLog" class="homey-button-small" data-i18n="settings.send" title="settings.send"></button>
 			</p>
 			<div class="field row">
-				<textarea id="statusData" class="homey-form-textarea" wrap="off" title="Device status log"></textarea>
+				<textarea id="statusData" class="homey-form-textarea" wrap="off" title="settings.deviceStatusLog" aria-label="settings.deviceStatusLog"></textarea>
 			</div>
 		</fieldset>
 	</div>
@@ -414,6 +363,12 @@
 		</fieldset>
 	</div>
 
+	<!-- DRIVER SUPPORT PAGE -->
+	<div id="driverSupport" class="tabcontent">
+		<div id="driverSupportSummary" class="driver-support-summary"></div>
+		<div id="driverSupportView"></div>
+	</div>
+
 	<script type="text/javascript">
 		// Create the busy indicator
 		var busyi;
@@ -423,22 +378,316 @@
 		var infoLogElement = document.getElementById('infoLog');
 		var logLevelElement = document.getElementById('logLevel');
 		var logSourceElement = document.getElementById('logSource');
+		var logFilterTypeElement = document.getElementById('logFilterType');
+		var logFilterValueElement = document.getElementById('logFilterValue');
+		var logFilterValueListElement = document.getElementById('logFilterValueList');
+		var logSettingsSummaryElement = document.getElementById('logSettingsSummary');
+		var logSettingsModalElement = document.getElementById('logSettingsModal');
+		var openLogSettingsElement = document.getElementById('openLogSettings');
+		var cancelLogSettingsElement = document.getElementById('cancelLogSettings');
+		var saveLogSettingsElement = document.getElementById('saveLogSettings');
+		var logFilterOptions = {};
 		var clearInfoLogElement = document.getElementById('clearInfoLog');
 		var sendInfoLogElement = document.getElementById('sendInfoLog');
 
 		var getDeviceLogElement = document.getElementById('getDeviceLog');
 		var clearDeviceLogElement = document.getElementById('clearDeviceLog');
 		var sendDeviceLogElement = document.getElementById('sendDeviceLog');
-		var loginWithOAuthElement = document.getElementById('loginWithOAuth');
-		var oAuthStatusMessageElement = document.getElementById('oAuthStatusMessage');
+		var bleOnlyNoticeElement = document.getElementById('bleOnlyNotice');
+		var goToStatisticsTabElement = document.getElementById('goToStatisticsTab');
 		var globalAuthWarningElement = document.getElementById('globalAuthWarning');
 		var globalAuthLoginElement = document.getElementById('globalAuthLogin');
 		var globalAuthLegacyElement = document.getElementById('globalAuthLegacy');
+		var modeHubElement = document.getElementById('modeHub');
+		var modeBLEElement = document.getElementById('modeBLE');
+		var driverSupportSummaryElement = document.getElementById('driverSupportSummary');
+		var driverSupportViewElement = document.getElementById('driverSupportView');
 		var homeyInstance = null;
+		var currentTabPage = 'detected';
+
+		function translateSetting(key, fallback)
+		{
+			if (!homeyInstance)
+			{
+				return fallback;
+			}
+			const value = homeyInstance.__(key);
+			return value === key ? fallback : value;
+		}
+
+		function escapeHtml(value)
+		{
+			return String(value === undefined || value === null ? '' : value)
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;')
+				.replace(/'/g, '&#39;');
+		}
+
+		function renderDriverSupportError(message)
+		{
+			driverSupportSummaryElement.innerHTML = '';
+			driverSupportViewElement.innerHTML = '';
+			const section = document.createElement('section');
+			section.className = 'driver-support-section';
+			section.textContent = message;
+			driverSupportViewElement.appendChild(section);
+		}
+
+		function createDriverSupportSection(title, items, className)
+		{
+			const section = document.createElement('section');
+			section.className = `driver-support-section ${className}`;
+			const heading = document.createElement('h3');
+			const headingText = document.createElement('span');
+			headingText.textContent = title;
+			const count = document.createElement('span');
+			count.className = 'driver-support-count';
+			count.textContent = items.length;
+			heading.appendChild(headingText);
+			heading.appendChild(count);
+			section.appendChild(heading);
+			return section;
+		}
+
+		function createDriverSupportIcon(driverId, iconPath)
+		{
+			const marker = '/settings/';
+			const markerIndex = window.location.pathname.indexOf(marker);
+			const appBasePath = markerIndex >= 0 ? window.location.pathname.substring(0, markerIndex) : '';
+			const canonicalPath = `/drivers/${driverId}/assets/icon.svg`;
+			const candidates = [
+				iconPath,
+				appBasePath ? `${appBasePath}${canonicalPath}` : '',
+				`../drivers/${driverId}/assets/icon.svg`,
+			].filter((candidate, index, paths) => candidate && paths.indexOf(candidate) === index);
+			const icon = document.createElement('img');
+			icon.className = 'driver-support-icon';
+			icon.alt = '';
+			let candidateIndex = 0;
+
+			icon.onerror = function ()
+			{
+				if (candidateIndex >= candidates.length)
+				{
+					icon.style.visibility = 'hidden';
+					return;
+				}
+
+				icon.src = candidates[candidateIndex];
+				candidateIndex++;
+			};
+			icon.onerror();
+			return icon;
+		}
+
+		function appendSupportedDriverSection(title, items, className)
+		{
+			const section = createDriverSupportSection(title, items, className);
+			const groups = {};
+			items.forEach((item) => {
+				const key = item.recommendedDriverId;
+				if (!groups[key])
+				{
+					groups[key] = { name: item.recommendedDriverName || key, icon: item.recommendedDriverIcon, devices: [] };
+				}
+				groups[key].devices.push(item.label);
+			});
+
+			Object.keys(groups).sort((left, right) => groups[left].name.localeCompare(groups[right].name)).forEach((key) => {
+				const group = groups[key];
+				const row = document.createElement('div');
+				row.className = 'driver-support-group';
+				const icon = createDriverSupportIcon(key, group.icon);
+				const content = document.createElement('div');
+				const name = document.createElement('strong');
+				name.textContent = group.name;
+				const list = document.createElement('ul');
+				list.className = 'driver-support-list';
+				group.devices.sort().forEach((deviceName) => {
+					const item = document.createElement('li');
+					item.textContent = deviceName;
+					list.appendChild(item);
+				});
+				content.appendChild(name);
+				content.appendChild(list);
+				row.appendChild(icon);
+				row.appendChild(content);
+				section.appendChild(row);
+			});
+
+			if (items.length === 0)
+			{
+				section.appendChild(document.createTextNode(translateSetting('settings.none', 'None')));
+			}
+			driverSupportViewElement.appendChild(section);
+		}
+
+		function appendNotSupportableSection(notSupportableDevices)
+		{
+			const section = createDriverSupportSection(
+				translateSetting('settings.driverSupportNotSupportable', 'Not supportable'),
+				notSupportableDevices,
+				'driver-support-not-supportable',
+			);
+			const description = document.createElement('p');
+			description.className = 'driver-support-section-subtitle';
+			description.textContent = translateSetting('settings.driverSupportNotSupportableDevices', 'No useful status, commands, or webhooks exposed by the SwitchBot API');
+			section.appendChild(description);
+			const list = document.createElement('ul');
+			list.className = 'driver-support-list';
+			notSupportableDevices.forEach((device) => {
+				const item = document.createElement('li');
+				item.textContent = device.deviceType || device.label;
+				list.appendChild(item);
+			});
+			section.appendChild(list);
+			if (notSupportableDevices.length === 0)
+			{
+				section.appendChild(document.createTextNode(translateSetting('settings.none', 'None')));
+			}
+			driverSupportViewElement.appendChild(section);
+		}
+
+		function renderDriverSupport(result)
+		{
+			if (!result)
+			{
+				renderDriverSupportError(translateSetting('settings.noData', 'No data'));
+				return;
+			}
+			if (result.hasConnectedSession === false)
+			{
+				renderDriverSupportError(translateSetting('settings.driverSupportConnectLogin', 'Log in with your SwitchBot account before checking driver support.'));
+				appendNotSupportableSection(Array.isArray(result.notSupportableDevices) ? result.notSupportableDevices : []);
+				return;
+			}
+
+			driverSupportSummaryElement.innerHTML = '';
+			driverSupportViewElement.innerHTML = '';
+			[
+				['driverSupportGenerated', 'Generated', result.generatedAt || '-'],
+				['driverSupportDevices', 'SwitchBot devices', result.totalSwitchBotDevices || 0],
+				['driverSupportDrivers', 'Matched drivers', result.totalMatchedDrivers || 0],
+				['driverSupportNotAdded', 'Supported but not added', result.totalSupportedNotInstalled || 0],
+				['driverSupportAdded', 'Supported and added', result.totalSupportedInstalled || 0],
+				['driverSupportUnsupported', 'Unsupported', result.totalUnsupported || 0],
+				['driverSupportNotSupportable', 'Not supportable', result.totalNotSupportable || 0],
+			].forEach((summary) => {
+				const chip = document.createElement('div');
+				chip.className = 'driver-support-chip';
+				chip.innerHTML = `<span class="driver-support-chip-label"></span><span class="driver-support-chip-value"></span>`;
+				chip.firstChild.textContent = translateSetting(`settings.${summary[0]}`, summary[1]);
+				chip.lastChild.textContent = summary[2];
+				driverSupportSummaryElement.appendChild(chip);
+			});
+
+			const recommendations = Array.isArray(result.recommendations) ? result.recommendations : [];
+			const supportedNotInstalled = recommendations.filter((item) => item.recommendedDriverId && !item.isInstalled);
+			const supportedInstalled = recommendations.filter((item) => item.recommendedDriverId && item.isInstalled);
+			const unsupported = recommendations.filter((item) => !item.recommendedDriverId);
+			appendSupportedDriverSection(translateSetting('settings.driverSupportNotAdded', 'Supported but not added to Homey'), supportedNotInstalled, 'driver-support-not-installed');
+			appendSupportedDriverSection(translateSetting('settings.driverSupportAdded', 'Supported and already added to Homey'), supportedInstalled, 'driver-support-installed');
+
+			const unsupportedSection = createDriverSupportSection(translateSetting('settings.driverSupportUnsupportedDevices', 'Unsupported devices'), unsupported, 'driver-support-unsupported');
+			const unsupportedList = document.createElement('ul');
+			unsupportedList.className = 'driver-support-list';
+			unsupported.forEach((device) => {
+				const item = document.createElement('li');
+				item.textContent = `${device.label} (${device.deviceType || translateSetting('settings.unknownType', 'Unknown type')})`;
+				unsupportedList.appendChild(item);
+			});
+			unsupportedSection.appendChild(unsupportedList);
+			if (unsupported.length > 0)
+			{
+				unsupportedSection.classList.add('driver-support-clickable');
+				unsupportedSection.title = translateSetting('settings.driverSupportSendTitle', 'Click to send unsupported device information to the developer');
+				unsupportedSection.addEventListener('click', function ()
+				{
+					Homey.confirm(translateSetting('settings.confirmSendUnsupported', 'Send information about these unsupported devices to the developer?'), null, function (err, confirmed)
+					{
+						if (err || !confirmed) return;
+						waitCursor(true);
+						Homey.api('POST', '/SendUnsupportedDevices/', { unsupportedDevices: unsupported }, function (apiErr)
+						{
+							waitCursor(false);
+							Homey.alert(apiErr || translateSetting('settings.logSentSuccessfully', 'Log sent successfully'));
+						});
+					});
+				});
+			}
+			driverSupportViewElement.appendChild(unsupportedSection);
+
+			const notSupportableDevices = Array.isArray(result.notSupportableDevices) ? result.notSupportableDevices : [];
+			appendNotSupportableSection(notSupportableDevices);
+		}
+
+		function refreshDriverSupport()
+		{
+			const mode = (modeBLEElement && modeBLEElement.checked) ? 'ble' : 'hub';
+			renderDriverSupportError(translateSetting('settings.driverSupportLoading', 'Checking driver support...'));
+			waitCursor(true);
+			Homey.api('POST', '/GetDriverSupportMatrix/', { mode }, function (err, result)
+			{
+				waitCursor(false);
+				if (err)
+				{
+					renderDriverSupportError(`${translateSetting('settings.driverSupportFetchFailed', 'Failed to fetch driver support data')}: ${err.message || err}`);
+					return;
+				}
+				renderDriverSupport(result);
+			});
+		}
 
 		function hasTextValue(value)
 		{
 			return typeof value === 'string' && value.trim().length > 0;
+		}
+
+		// Last known auth state, used to render the banner synchronously before the async check completes
+		var authWarningTabsExcluded = ['appSettings', 'log', 'statistics', 'bleDevices'];
+		var cachedHasOAuthSession = false;
+		var cachedHasLegacyAuth = false;
+		var authCacheReady = false;
+
+		function applyGlobalAuthWarningVisibility(tabPage)
+		{
+			if (!globalAuthWarningElement)
+			{
+				return;
+			}
+
+			// Driver Support is only cloud-dependent while in HUB mode
+			const isBLEDriverSupport = tabPage === 'driverSupport' && modeBLEElement && modeBLEElement.checked;
+			const shouldShowWarning = authCacheReady && !cachedHasOAuthSession && !cachedHasLegacyAuth
+				&& !authWarningTabsExcluded.includes(tabPage) && !isBLEDriverSupport;
+			globalAuthWarningElement.style.display = shouldShowWarning ? 'block' : 'none';
+		}
+
+		// Show only the tabs relevant to the selected device mode (data-mode="both" tabs are always shown)
+		function applyDeviceModeVisibility(mode)
+		{
+			const tabButtons = document.querySelectorAll('.tab .tablinks[data-mode]');
+			let activeTabIsVisible = false;
+			tabButtons.forEach((tabButton) => {
+				const tabMode = tabButton.getAttribute('data-mode');
+				const isVisible = tabMode === 'both' || tabMode === mode;
+				tabButton.classList.toggle('tablinks-mode-hidden', !isVisible);
+				if (isVisible && tabButton.classList.contains('active'))
+				{
+					activeTabIsVisible = true;
+				}
+			});
+
+			if (!activeTabIsVisible)
+			{
+				const firstVisibleTab = Array.from(tabButtons).find((tabButton) => !tabButton.classList.contains('tablinks-mode-hidden'));
+				if (firstVisibleTab)
+				{
+					firstVisibleTab.click();
+				}
+			}
 		}
 
 		function updateGlobalAuthWarning(hasOAuthSession)
@@ -448,13 +697,15 @@
 				return;
 			}
 
+			cachedHasOAuthSession = hasOAuthSession;
+
 			homeyInstance.get('openToken', function (tokenErr, openToken)
 			{
 				homeyInstance.get('openSecret', function (secretErr, openSecret)
 				{
-					const hasLegacyAuth = hasTextValue(openToken) && hasTextValue(openSecret);
-					const shouldShowWarning = !hasOAuthSession && !hasLegacyAuth;
-					globalAuthWarningElement.style.display = shouldShowWarning ? 'block' : 'none';
+					cachedHasLegacyAuth = hasTextValue(openToken) && hasTextValue(openSecret);
+					authCacheReady = true;
+					applyGlobalAuthWarningVisibility(currentTabPage);
 
 					if (tokenErr)
 					{
@@ -472,19 +723,17 @@
 		{
 			if (hasOAuthSession)
 			{
-				oAuthStatusMessageElement.style.display = 'none';
-				loginWithOAuthElement.style.display = 'none';
 				getDeviceLogElement.style.display = 'inline-block';
 				clearDeviceLogElement.style.display = 'inline-block';
 				sendDeviceLogElement.style.display = 'inline-block';
+				bleOnlyNoticeElement.style.display = 'none';
 			}
 			else
 			{
-				oAuthStatusMessageElement.style.display = 'block';
-				loginWithOAuthElement.style.display = 'inline-block';
 				getDeviceLogElement.style.display = 'none';
 				clearDeviceLogElement.style.display = 'none';
 				sendDeviceLogElement.style.display = 'none';
+				bleOnlyNoticeElement.style.display = 'block';
 			}
 
 			updateGlobalAuthWarning(hasOAuthSession);
@@ -518,6 +767,62 @@
 			key: 'name',
 			direction: 'asc',
 		};
+
+		var bleDetectedTableElement = document.getElementById('bleDetectedTable');
+		var scanForBLEDevicesElement = document.getElementById('scanForBLEDevices');
+		var bleDetectedDevicesRows = [];
+		var bleDetectedDevicesSort = {
+			key: 'modelName',
+			direction: 'asc',
+		};
+
+		var allBLEDevicesTableElement = document.getElementById('allBLEDevicesTable');
+		var allBLEDevicesSectionElement = document.getElementById('allBLEDevicesSection');
+		var recordAllBLEDevicesElement = document.getElementById('recordAllBLEDevices');
+		var copyAllBLEDevicesElement = document.getElementById('copyAllBLEDevices');
+		var clearAllBLEDevicesElement = document.getElementById('clearAllBLEDevices');
+		var allBLEDevicesRows = [];
+		var allBLEDevicesSort = {
+			key: 'address',
+			direction: 'asc',
+		};
+
+		var bleAdvertisementsEnabledElement = document.getElementById('bleAdvertisementsEnabled');
+		var bleAdvertisementsStatusElement = document.getElementById('bleAdvertisementsStatus');
+
+		function refreshBLEAdvertisementSettings()
+		{
+			Homey.api('GET', '/getBLEAdvertisementSettings/', {}, function (err, result)
+			{
+				if (err || !result)
+				{
+					console.error('Failed to read BLE advertisement settings:', err);
+					return;
+				}
+
+				if (bleAdvertisementsEnabledElement)
+				{
+					bleAdvertisementsEnabledElement.checked = Boolean(result.enabled) && Boolean(result.featureAvailable);
+					bleAdvertisementsEnabledElement.disabled = !result.featureAvailable;
+				}
+
+				if (bleAdvertisementsStatusElement)
+				{
+					if (!result.featureAvailable)
+					{
+						bleAdvertisementsStatusElement.textContent = translateSetting('settings.bleAdvertisementsUnsupported', 'This Homey does not support BLE advertisement subscriptions.');
+					}
+					else if (result.enabled)
+					{
+						bleAdvertisementsStatusElement.textContent = `${translateSetting('settings.bleAdvertisementsActive', 'Active subscriptions')}: ${Number(result.activeSubscriptions || 0)}`;
+					}
+					else
+					{
+						bleAdvertisementsStatusElement.textContent = translateSetting('settings.bleAdvertisementsPolling', 'Using polling for all BLE devices.');
+					}
+				}
+			});
+		}
 
 		function compareBLEStatisticsRows(left, right, key, direction)
 		{
@@ -599,12 +904,393 @@
 			});
 
 			updateBLEStatisticsSortIndicators();
+
+			bleStatisticsTableElement.addEventListener('click', function (event)
+			{
+				const cell = event.target.closest('td.ble-error-count');
+				if (!cell)
+				{
+					return;
+				}
+
+				const lastError = cell.getAttribute('data-last-error') || '';
+				Homey.alert(lastError || translateSetting('settings.noErrorRecorded', 'No error recorded'));
+			});
+		}
+
+		function compareDetectedBLEDevicesRows(left, right, key, direction)
+		{
+			const factor = direction === 'desc' ? -1 : 1;
+			if (key === 'rssi')
+			{
+				const leftValue = (typeof left.rssi === 'number' && Number.isFinite(left.rssi)) ? left.rssi : -Infinity;
+				const rightValue = (typeof right.rssi === 'number' && Number.isFinite(right.rssi)) ? right.rssi : -Infinity;
+				return (leftValue - rightValue) * factor;
+			}
+
+			if (key === 'isInstalled')
+			{
+				return ((left.isInstalled ? 1 : 0) - (right.isInstalled ? 1 : 0)) * factor;
+			}
+
+			const leftText = String((left && left[key]) || '').toLowerCase();
+			const rightText = String((right && right[key]) || '').toLowerCase();
+			return leftText.localeCompare(rightText) * factor;
+		}
+
+		function updateDetectedBLEDevicesSortIndicators()
+		{
+			const headers = bleDetectedTableElement
+				? bleDetectedTableElement.querySelectorAll('thead th.sortable[data-sort-key]')
+				: [];
+
+			headers.forEach((header) => {
+				const sortKey = header.getAttribute('data-sort-key');
+				const baseLabel = header.getAttribute('data-base-label') || header.textContent.replace(/\s*[▲▼]$/, '');
+				header.setAttribute('data-base-label', baseLabel);
+				if (sortKey === bleDetectedDevicesSort.key)
+				{
+					header.textContent = `${baseLabel} ${bleDetectedDevicesSort.direction === 'asc' ? '▲' : '▼'}`;
+				}
+				else
+				{
+					header.textContent = baseLabel;
+				}
+			});
+		}
+
+		function setDetectedBLEDevicesSort(sortKey)
+		{
+			if (!sortKey)
+			{
+				return;
+			}
+
+			if (bleDetectedDevicesSort.key === sortKey)
+			{
+				bleDetectedDevicesSort.direction = bleDetectedDevicesSort.direction === 'asc' ? 'desc' : 'asc';
+			}
+			else
+			{
+				bleDetectedDevicesSort.key = sortKey;
+				bleDetectedDevicesSort.direction = 'asc';
+			}
+
+			updateDetectedBLEDevicesSortIndicators();
+			renderDetectedBLEDevices(bleDetectedDevicesRows);
+		}
+
+		function initializeDetectedBLEDevicesSorting()
+		{
+			if (!bleDetectedTableElement)
+			{
+				return;
+			}
+
+			const headers = bleDetectedTableElement.querySelectorAll('thead th.sortable[data-sort-key]');
+			headers.forEach((header) => {
+				header.addEventListener('click', function ()
+				{
+					setDetectedBLEDevicesSort(header.getAttribute('data-sort-key'));
+				});
+			});
+
+			updateDetectedBLEDevicesSortIndicators();
+		}
+
+		function getAllBLEDeviceServiceDataText(row)
+		{
+			return (row && Array.isArray(row.serviceData) ? row.serviceData : [])
+				.map((entry) => `${entry.uuid}: ${entry.data}`)
+				.join(' | ');
+		}
+
+		function compareAllBLEDevicesRows(left, right, key, direction)
+		{
+			const factor = direction === 'desc' ? -1 : 1;
+			if (key === 'rssi' || key === 'seenCount')
+			{
+				const leftValue = (typeof left[key] === 'number' && Number.isFinite(left[key])) ? left[key] : -Infinity;
+				const rightValue = (typeof right[key] === 'number' && Number.isFinite(right[key])) ? right[key] : -Infinity;
+				return (leftValue - rightValue) * factor;
+			}
+
+			if (key === 'isSwitchBot')
+			{
+				return ((left.isSwitchBot ? 1 : 0) - (right.isSwitchBot ? 1 : 0)) * factor;
+			}
+
+			if (key === 'isInstalled' || key === 'subscribed')
+			{
+				return ((left[key] ? 1 : 0) - (right[key] ? 1 : 0)) * factor;
+			}
+
+			const leftText = String((key === 'serviceDataText' ? getAllBLEDeviceServiceDataText(left) : left[key]) || '').toLowerCase();
+			const rightText = String((key === 'serviceDataText' ? getAllBLEDeviceServiceDataText(right) : right[key]) || '').toLowerCase();
+			return leftText.localeCompare(rightText) * factor;
+		}
+
+		function updateAllBLEDevicesSortIndicators()
+		{
+			const headers = allBLEDevicesTableElement
+				? allBLEDevicesTableElement.querySelectorAll('thead th.sortable[data-sort-key]')
+				: [];
+
+			headers.forEach((header) => {
+				const sortKey = header.getAttribute('data-sort-key');
+				const baseLabel = header.getAttribute('data-base-label') || header.textContent.replace(/\s*[▲▼]$/, '');
+				header.setAttribute('data-base-label', baseLabel);
+				if (sortKey === allBLEDevicesSort.key)
+				{
+					header.textContent = `${baseLabel} ${allBLEDevicesSort.direction === 'asc' ? '▲' : '▼'}`;
+				}
+				else
+				{
+					header.textContent = baseLabel;
+				}
+			});
+		}
+
+		function initializeAllBLEDevicesSorting()
+		{
+			if (!allBLEDevicesTableElement)
+			{
+				return;
+			}
+
+			const headers = allBLEDevicesTableElement.querySelectorAll('thead th.sortable[data-sort-key]');
+			headers.forEach((header) => {
+				header.addEventListener('click', function ()
+				{
+					const sortKey = header.getAttribute('data-sort-key');
+					if (!sortKey)
+					{
+						return;
+					}
+
+					if (allBLEDevicesSort.key === sortKey)
+					{
+						allBLEDevicesSort.direction = allBLEDevicesSort.direction === 'asc' ? 'desc' : 'asc';
+					}
+					else
+					{
+						allBLEDevicesSort.key = sortKey;
+						allBLEDevicesSort.direction = 'asc';
+					}
+
+					updateAllBLEDevicesSortIndicators();
+					renderAllBLEDevices(allBLEDevicesRows);
+				});
+			});
+
+			updateAllBLEDevicesSortIndicators();
+		}
+
+		function renderAllBLEDevices(rows)
+		{
+			const tbody = allBLEDevicesTableElement && allBLEDevicesTableElement.querySelector('tbody');
+			if (!tbody)
+			{
+				return;
+			}
+
+			allBLEDevicesRows = Array.isArray(rows) ? rows : [];
+
+			if (allBLEDevicesRows.length === 0)
+			{
+				tbody.innerHTML = `<tr><td colspan="8" style="padding:8px;">${translateSetting('settings.noAllBLEDevicesRecorded', 'No devices recorded yet. Run a scan with recording enabled.')}</td></tr>`;
+				return;
+			}
+
+			const sortedRows = allBLEDevicesRows
+				.slice()
+				.sort((left, right) => compareAllBLEDevicesRows(left, right, allBLEDevicesSort.key, allBLEDevicesSort.direction));
+
+			const sanitize = (value) => escapeHtml(value);
+			const spaceHex = (hex) => String(hex || '').replace(/(.{2})/g, '$1 ').trim();
+
+			tbody.innerHTML = sortedRows.map((row) => {
+				const address = sanitize(row.address);
+				const localName = sanitize(row.localName) || '-';
+				const rssiText = (typeof row.rssi === 'number' && Number.isFinite(row.rssi)) ? String(row.rssi) : '-';
+				const rssiClass = getRSSIQualityClass(row.rssi);
+				const switchBotText = row.isSwitchBot
+					? translateSetting('settings.yes', 'Yes')
+					: translateSetting('settings.no', 'No');
+				const reasonText = sanitize(row.reason) || '-';
+				const serviceParts = (Array.isArray(row.serviceData) ? row.serviceData : [])
+					.map((entry) => `${sanitize(entry.uuid)}: ${spaceHex(sanitize(entry.data))}`)
+					.join('<br />') || '-';
+				const manufacturerText = spaceHex(sanitize(row.manufacturerData)) || '-';
+				const modelText = row.modelName
+					? `${sanitize(row.modelName)} (${sanitize(row.model)})`
+					: '';
+				const driverText = row.matchedDriverName ? sanitize(row.matchedDriverName) : '';
+				const extraParts = [];
+				if (modelText)
+				{
+					extraParts.push(`<span class="ble-raw-label">${translateSetting('settings.bleDeviceModel', 'Model')}:</span> ${modelText}`);
+				}
+				if (driverText)
+				{
+					extraParts.push(`<span class="ble-raw-label">${translateSetting('settings.bleDeviceMatchedDriver', 'Matched Driver')}:</span> ${driverText}`);
+				}
+				const extraText = extraParts.length ? `${extraParts.join(' &nbsp; ')}<br />` : '';
+				const withCount = Number(row.withServiceDataCount || 0);
+				const withoutCount = Number(row.withoutServiceDataCount || 0);
+				const seenTitle = `${translateSetting('settings.bleServiceData', 'Service Data')}: ${withCount} / ${withCount + withoutCount}`;
+				const pairedText = row.isInstalled
+					? translateSetting('settings.yes', 'Yes')
+					: translateSetting('settings.no', 'No');
+				const subscribedText = row.subscribed
+					? translateSetting('settings.yes', 'Yes')
+					: translateSetting('settings.no', 'No');
+				return `
+					<tr class="${row.isSwitchBot ? '' : 'ble-not-switchbot'}">
+						<td>${address}</td>
+						<td>${localName}</td>
+						<td class="${rssiClass}" style="text-align:right;">${rssiText}</td>
+						<td>${switchBotText}</td>
+						<td title="${sanitize(row.pairedName)}">${pairedText}</td>
+						<td>${subscribedText}</td>
+						<td title="${reasonText}">${reasonText}</td>
+						<td style="text-align:right;" title="${seenTitle}">${withCount}/${withCount + withoutCount}</td>
+					</tr>
+					<tr>
+						<td class="ble-raw" colspan="8">
+							${extraText}<span class="ble-raw-label">${translateSetting('settings.bleServiceData', 'Service Data')}:</span> ${serviceParts}<br />
+							<span class="ble-raw-label">${translateSetting('settings.bleManufacturerData', 'Manufacturer Data')}:</span> ${manufacturerText}
+						</td>
+					</tr>
+				`;
+			}).join('');
+		}
+
+		function refreshAllBLEDevices()
+		{
+			if (!recordAllBLEDevicesElement || !recordAllBLEDevicesElement.checked)
+			{
+				return;
+			}
+
+			Homey.api('GET', '/getAllDetectedBLEDevices/', {}, function (err, result)
+			{
+				if (err)
+				{
+					console.error('Failed to load recorded BLE devices:', err);
+					return;
+				}
+
+				renderAllBLEDevices(Array.isArray(result) ? result : []);
+			});
+		}
+
+		async function copyAllBLEDevicesToClipboard()
+		{
+			const header = ['MAC', 'Local name', 'RSSI', 'SwitchBot', 'Address type', 'Connectable', 'Service UUIDs', 'Service data', 'Manufacturer data', 'Model', 'Model name', 'Driver', 'Installed', 'Paired name', 'Subscribed', 'Reason', 'Seen count', 'With service data', 'Without service data', 'First seen', 'Last seen'];
+			const lines = [header.join('\t')];
+			for (const row of allBLEDevicesRows)
+			{
+				lines.push([
+					row.address || '',
+					row.localName || '',
+					(typeof row.rssi === 'number' && Number.isFinite(row.rssi)) ? row.rssi : '',
+					row.isSwitchBot ? 'yes' : 'no',
+					row.addressType || '',
+					row.connectable ? 'yes' : 'no',
+					(Array.isArray(row.serviceUuids) ? row.serviceUuids.join(' ') : ''),
+					getAllBLEDeviceServiceDataText(row),
+					row.manufacturerData || '',
+					row.model || '',
+					row.modelName || '',
+					row.matchedDriverName || '',
+					row.isInstalled ? 'yes' : 'no',
+					row.pairedName || '',
+					row.subscribed ? 'yes' : 'no',
+					row.reason || '',
+					Number(row.seenCount || 0),
+					Number(row.withServiceDataCount || 0),
+					Number(row.withoutServiceDataCount || 0),
+					row.firstSeenAt ? new Date(row.firstSeenAt).toISOString() : '',
+					row.lastSeenAt ? new Date(row.lastSeenAt).toISOString() : '',
+				].join('\t'));
+			}
+
+			const text = lines.join('\n');
+			try
+			{
+				if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function')
+				{
+					await navigator.clipboard.writeText(text);
+				}
+				else
+				{
+					throw new Error('Clipboard API unavailable');
+				}
+
+				if (homeyInstance)
+				{
+					homeyInstance.alert(translateSetting('settings.recordedDevicesCopied', 'Recorded devices table copied to clipboard.'));
+				}
+			}
+			catch (err)
+			{
+				const fallbackArea = document.createElement('textarea');
+				fallbackArea.value = text;
+				fallbackArea.setAttribute('readonly', 'readonly');
+				fallbackArea.style.position = 'fixed';
+				fallbackArea.style.top = '-1000px';
+				document.body.appendChild(fallbackArea);
+				fallbackArea.select();
+				fallbackArea.setSelectionRange(0, fallbackArea.value.length);
+
+				const copied = document.execCommand('copy');
+				document.body.removeChild(fallbackArea);
+
+				if (homeyInstance)
+				{
+					homeyInstance.alert(copied
+						? translateSetting('settings.recordedDevicesCopied', 'Recorded devices table copied to clipboard.')
+						: translateSetting('settings.statisticsCopyFailed', 'Could not copy automatically. Please select and copy the table manually.'));
+				}
+			}
+		}
+
+		function setAllBLEDevicesVisibility()
+		{
+			const isEnabled = Boolean(recordAllBLEDevicesElement && recordAllBLEDevicesElement.checked);
+			if (allBLEDevicesSectionElement)
+			{
+				allBLEDevicesSectionElement.classList.toggle('is-visible', isEnabled);
+			}
+
+			const bleDevicesTab = document.getElementById('bleDevices');
+			if (bleDevicesTab)
+			{
+				bleDevicesTab.classList.toggle('is-recording-all', isEnabled);
+			}
+
+			if (isEnabled)
+			{
+				refreshAllBLEDevices();
+			}
 		}
 
 		function getBLEStatisticsClipboardText()
 		{
 			const rows = [];
-			rows.push(['Device', 'MAC', 'Driver', 'Missing', 'Present', 'Advertisements', 'Polled', 'RSSI (dBm)', 'Last Seen (HH:MM:SS ago)'].join('\t'));
+			rows.push([
+				translateSetting('settings.device', 'Device'),
+				translateSetting('settings.mac', 'MAC'),
+				translateSetting('settings.driver', 'Driver'),
+				translateSetting('settings.missing', 'Missing'),
+				translateSetting('settings.present', 'Present'),
+				translateSetting('settings.advertisements', 'Advertisements'),
+				translateSetting('settings.polled', 'Polled'),
+				translateSetting('settings.errors', 'Errors'),
+				translateSetting('settings.rssiDbm', 'RSSI (dBm)'),
+				translateSetting('settings.lastSeenElapsed', 'Last Seen (HH:MM:SS ago)'),
+			].join('\t'));
 
 			const tbody = bleStatisticsTableElement && bleStatisticsTableElement.querySelector('tbody');
 			if (!tbody)
@@ -616,13 +1302,13 @@
 			for (const row of bodyRows)
 			{
 				const cells = Array.from(row.querySelectorAll('td'));
-				if (cells.length < 9)
+				if (cells.length < 10)
 				{
 					continue;
 				}
 
 				const values = cells.map((cell) => cell.textContent.replace(/\s+/g, ' ').trim());
-				if (values[0] === 'No BLE devices registered.')
+				if (values[0] === translateSetting('settings.noBleDevices', 'No BLE devices registered.'))
 				{
 					continue;
 				}
@@ -649,7 +1335,7 @@
 
 				if (homeyInstance)
 				{
-					homeyInstance.alert('Statistics table copied to clipboard.');
+					homeyInstance.alert(translateSetting('settings.statisticsCopied', 'Statistics table copied to clipboard.'));
 				}
 			}
 			catch (err)
@@ -669,15 +1355,15 @@
 				if (homeyInstance)
 				{
 					homeyInstance.alert(copied
-						? 'Statistics table copied to clipboard.'
-						: 'Could not copy automatically. Please select and copy the table manually.');
+						? translateSetting('settings.statisticsCopied', 'Statistics table copied to clipboard.')
+						: translateSetting('settings.statisticsCopyFailed', 'Could not copy automatically. Please select and copy the table manually.'));
 				}
 			}
 		}
 
 		function clearBLEStatistics()
 		{
-			Homey.confirm('Clear BLE statistics counters and keep Last Seen values?', null, function (err, ok)
+			Homey.confirm(translateSetting('settings.confirmClearStatistics', 'Clear BLE statistics counters and keep Last Seen values?'), null, function (err, ok)
 			{
 				if (err || !ok)
 				{
@@ -697,13 +1383,25 @@
 			});
 		}
 
+		function getRSSIQualityClass(rssi)
+		{
+			if (typeof rssi !== 'number' || !Number.isFinite(rssi))
+			{
+				return '';
+			}
+			if (rssi >= -60) return 'rssi-good';
+			if (rssi >= -75) return 'rssi-ok';
+			if (rssi >= -90) return 'rssi-low';
+			return 'rssi-poor';
+		}
+
 		function renderBLEStatistics(rows)
 		{
 			const formatElapsedSince = (lastSeenAt) => {
 				const timestamp = Number(lastSeenAt || 0);
 				if (!timestamp)
 				{
-					return 'Never';
+					return translateSetting('settings.never', 'Never');
 				}
 
 				const elapsedSeconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
@@ -721,7 +1419,7 @@
 
 			if (!Array.isArray(rows) || rows.length === 0)
 			{
-				tbody.innerHTML = '<tr><td colspan="9" style="padding:8px;">No BLE devices registered.</td></tr>';
+				tbody.innerHTML = `<tr><td colspan="10" style="padding:8px;">${translateSetting('settings.noBleDevices', 'No BLE devices registered.')}</td></tr>`;
 				return;
 			}
 
@@ -732,18 +1430,27 @@
 			tbody.innerHTML = sortedRows.map((row) => {
 				const lastSeenText = formatElapsedSince(row.lastSeenAt);
 				const rssiText = (typeof row.rssi === 'number' && Number.isFinite(row.rssi)) ? String(Math.round(row.rssi)) : '-';
-				const macText = (row.mac || '').replace(/[<>]/g, '');
-				const driverText = (row.driverType || '').replace(/[<>]/g, '');
+				const rssiClass = getRSSIQualityClass(row.rssi);
+				const macText = escapeHtml(row.mac);
+				const macClass = row.viaBLEHub ? 'ble-hub-source' : '';
+				const macTitle = row.viaBLEHub ? translateSetting('settings.bleHubSourceTitle', 'Relayed via ESP32 BLE Hub') : '';
+				const driverText = escapeHtml(row.driverType);
+				const naText = (value) => (row.viaBLEHub && !Number(value || 0)) ? '-' : String(Number(value || 0));
+				const errorsCount = Number(row.errors || 0);
+				const lastErrorText = row.lastError ? escapeHtml(row.lastError) : '';
+				const errorCellClass = errorsCount > 0 ? 'ble-error-count' : '';
+				const errorCellTitle = errorsCount > 0 ? translateSetting('settings.clickToViewError', 'Click to view last error') : '';
 				return `
 					<tr>
-						<td style="padding:6px 8px;">${(row.name || 'Unknown').replace(/[<>]/g, '')}</td>
-						<td style="padding:6px 8px;">${macText}</td>
+						<td style="padding:6px 8px;">${escapeHtml(row.name || translateSetting('settings.unknown', 'Unknown'))}</td>
+						<td class="${macClass}" title="${macTitle}" style="padding:6px 8px;">${macText}</td>
 						<td style="padding:6px 8px;">${driverText}</td>
-						<td style="padding:6px 8px; text-align:right;">${Number(row.missing || 0)}</td>
-						<td style="padding:6px 8px; text-align:right;">${Number(row.present || 0)}</td>
-						<td style="padding:6px 8px; text-align:right;">${Number(row.advertisements || 0)}</td>
-						<td style="padding:6px 8px; text-align:right;">${Number(row.polls || 0)}</td>
-						<td style="padding:6px 8px; text-align:right;">${rssiText}</td>
+						<td style="padding:6px 8px; text-align:right;">${naText(row.missing)}</td>
+						<td style="padding:6px 8px; text-align:right;">${naText(row.present)}</td>
+						<td style="padding:6px 8px; text-align:right;">${naText(row.advertisements)}</td>
+						<td style="padding:6px 8px; text-align:right;">${naText(row.polls)}</td>
+						<td class="${errorCellClass}" data-last-error="${lastErrorText}" title="${errorCellTitle}" style="padding:6px 8px; text-align:right;">${errorsCount > 0 ? errorsCount : naText(row.errors)}</td>
+						<td class="${rssiClass}" style="padding:6px 8px; text-align:right;">${rssiText}</td>
 						<td style="padding:6px 8px; text-align:left;">${lastSeenText}</td>
 					</tr>
 				`;
@@ -761,6 +1468,94 @@
 				}
 
 				renderBLEStatistics(Array.isArray(result) ? result : []);
+			});
+		}
+
+		function renderDetectedBLEDevices(rows)
+		{
+			const tbody = bleDetectedTableElement && bleDetectedTableElement.querySelector('tbody');
+			if (!tbody)
+			{
+				return;
+			}
+
+			bleDetectedDevicesRows = Array.isArray(rows) ? rows : [];
+
+			if (bleDetectedDevicesRows.length === 0)
+			{
+				tbody.innerHTML = `<tr><td colspan="5" style="padding:8px;">${translateSetting('settings.noBLEDevicesDetected', 'No BLE devices detected yet. Click Scan Now to search.')}</td></tr>`;
+				return;
+			}
+
+			const sortedRows = bleDetectedDevicesRows
+				.slice()
+				.sort((left, right) => compareDetectedBLEDevicesRows(left, right, bleDetectedDevicesSort.key, bleDetectedDevicesSort.direction));
+
+			tbody.innerHTML = sortedRows.map((row) => {
+				const modelName = escapeHtml(row.modelName || row.model || translateSetting('settings.unknown', 'Unknown'));
+				const address = escapeHtml(row.address);
+				const addressClass = row.viaBLEHub ? 'ble-hub-source' : '';
+				const rssiText = (typeof row.rssi === 'number' && Number.isFinite(row.rssi)) ? String(row.rssi) : '-';
+				const rssiClass = getRSSIQualityClass(row.rssi);
+				const driverText = row.matchedDriverName
+					? escapeHtml(row.matchedDriverName)
+					: translateSetting('settings.bleDeviceUnsupported', 'Unsupported');
+				const installedText = row.isInstalled
+					? translateSetting('settings.yes', 'Yes')
+					: translateSetting('settings.no', 'No');
+				return `
+					<tr>
+						<td>${modelName}</td>
+						<td class="${addressClass}" title="${row.viaBLEHub ? translateSetting('settings.bleHubSourceTitle', 'Relayed via ESP32 BLE Hub') : ''}">${address}</td>
+						<td class="${rssiClass}" style="text-align:right;">${rssiText}</td>
+						<td>${driverText}</td>
+						<td style="text-align:right;">${installedText}</td>
+					</tr>
+				`;
+			}).join('');
+		}
+
+		function renderDetectedBLEDevicesMessage(message)
+		{
+			const tbody = bleDetectedTableElement && bleDetectedTableElement.querySelector('tbody');
+			if (tbody)
+			{
+				tbody.innerHTML = `<tr><td colspan="5" style="padding:8px;">${escapeHtml(message)}</td></tr>`;
+			}
+		}
+
+		function refreshDetectedBLEDevices()
+		{
+			if (scanForBLEDevicesElement)
+			{
+				scanForBLEDevicesElement.disabled = true;
+				scanForBLEDevicesElement.textContent = translateSetting('settings.scanningBLEDevices', 'Scanning...');
+			}
+
+			Homey.api('GET', '/getDetectedBLEDevices/', {}, function (err, result)
+			{
+				if (scanForBLEDevicesElement)
+				{
+					scanForBLEDevicesElement.disabled = false;
+					scanForBLEDevicesElement.textContent = translateSetting('settings.scanForBLEDevices', 'Scan Now');
+				}
+
+				if (err)
+				{
+					console.error('BLE device scan failed:', err);
+					return;
+				}
+
+				// The API returns {initialising, devices}; older shapes returned a bare array.
+				if (result && !Array.isArray(result) && result.initialising)
+				{
+					renderDetectedBLEDevicesMessage(translateSetting('settings.bleInitialising', 'Waiting for BLE to initialise...'));
+					return;
+				}
+
+				const devices = Array.isArray(result) ? result : ((result && result.devices) || []);
+				renderDetectedBLEDevices(devices);
+				refreshAllBLEDevices();
 			});
 		}
 
@@ -787,6 +1582,222 @@
 			});
 		}
 
+		function getSelectedText(selectElement)
+		{
+			const option = selectElement.options[selectElement.selectedIndex];
+			return option ? option.textContent.trim() : '';
+		}
+
+		function updateLogFilterIdentifierLabel()
+		{
+			const identifierOption = document.getElementById('logFilterIdentifierOption');
+			if (logSourceElement.value === 'ble')
+			{
+				identifierOption.textContent = translateSetting('settings.bleMac', 'BLE MAC');
+			}
+			else if (logSourceElement.value === 'hub')
+			{
+				identifierOption.textContent = translateSetting('settings.deviceIdTechnical', 'deviceId');
+			}
+			else
+			{
+				identifierOption.textContent = translateSetting('settings.bleMacDeviceId', 'BLE MAC / deviceId');
+			}
+		}
+
+		function populateLogFilterValues(selectedValue)
+		{
+			updateLogFilterIdentifierLabel();
+			const filterType = logFilterTypeElement.value;
+			const sourceOptions = logSourceElement.value !== 'all' && logFilterOptions.bySource
+				? (logFilterOptions.bySource[logSourceElement.value] || {})
+				: logFilterOptions;
+			const values = filterType === 'none' ? [] : (sourceOptions[filterType] || []).map((entry) => (
+				typeof entry === 'string' ? { value: entry, label: entry } : entry
+			));
+			logFilterValueElement.innerHTML = '';
+			logFilterValueListElement.innerHTML = '';
+
+			if (filterType === 'none')
+			{
+				const option = document.createElement('option');
+				option.value = '';
+				option.textContent = translateSetting('settings.allData', 'All data');
+				logFilterValueElement.appendChild(option);
+				logFilterValueElement.disabled = true;
+				const message = document.createElement('div');
+				message.className = 'log-filter-value-empty';
+				message.textContent = option.textContent;
+				logFilterValueListElement.appendChild(message);
+				return;
+			}
+
+			logFilterValueElement.disabled = false;
+			if (values.length === 0)
+			{
+				const option = document.createElement('option');
+				option.value = '';
+				option.textContent = translateSetting('settings.noMatchingDevices', 'No matching devices');
+				logFilterValueElement.appendChild(option);
+				logFilterValueElement.disabled = true;
+				const message = document.createElement('div');
+				message.className = 'log-filter-value-empty';
+				message.textContent = option.textContent;
+				logFilterValueListElement.appendChild(message);
+				return;
+			}
+
+			for (const entry of values)
+			{
+				const option = document.createElement('option');
+				option.value = entry.value;
+				option.textContent = entry.label;
+				option.dataset.driverId = entry.driverId || '';
+				logFilterValueElement.appendChild(option);
+
+				const item = document.createElement('button');
+				item.className = 'log-filter-value-item';
+				item.type = 'button';
+				item.dataset.value = entry.value;
+				item.setAttribute('aria-pressed', 'false');
+				const icon = createDriverSupportIcon(String(entry.driverId || '').split(':').pop(), '');
+				icon.className = 'log-filter-value-icon';
+				const label = document.createElement('span');
+				label.className = 'log-filter-value-label';
+				label.textContent = entry.label;
+				item.appendChild(icon);
+				item.appendChild(label);
+				item.addEventListener('click', function ()
+				{
+					logFilterValueElement.value = entry.value;
+					for (const candidate of logFilterValueListElement.querySelectorAll('.log-filter-value-item'))
+					{
+						const isSelected = candidate.dataset.value === entry.value;
+						candidate.classList.toggle('selected', isSelected);
+						candidate.setAttribute('aria-pressed', String(isSelected));
+					}
+				});
+				logFilterValueListElement.appendChild(item);
+			}
+
+			if (selectedValue && values.some((entry) => entry.value === selectedValue))
+			{
+				logFilterValueElement.value = selectedValue;
+			}
+
+			const selectedItem = Array.from(logFilterValueListElement.querySelectorAll('.log-filter-value-item'))
+				.find((item) => item.dataset.value === logFilterValueElement.value);
+			if (selectedItem)
+			{
+				selectedItem.classList.add('selected');
+				selectedItem.setAttribute('aria-pressed', 'true');
+			}
+		}
+
+		function updateLogSettingsSummary()
+		{
+			const filterSummary = logFilterTypeElement.value === 'none'
+				? translateSetting('settings.allData', 'All data')
+				: `${getSelectedText(logFilterTypeElement)}: ${getSelectedText(logFilterValueElement) || translateSetting('settings.noSelection', 'No selection')}`;
+			const summaryText = document.createElement('div');
+			summaryText.className = 'log-settings-summary-text';
+			summaryText.textContent = [
+				`${translateSetting('settings.level', 'Level')}: ${getSelectedText(logLevelElement)}`,
+				`${translateSetting('settings.source', 'Source')}: ${getSelectedText(logSourceElement)}`,
+				`${translateSetting('settings.filter', 'Filter')}: ${filterSummary}`,
+			].join('\n');
+
+			logSettingsSummaryElement.innerHTML = '';
+			const selectedOption = logFilterValueElement.options[logFilterValueElement.selectedIndex];
+			const driverId = logFilterTypeElement.value !== 'none' && selectedOption
+				? String(selectedOption.dataset.driverId || '').split(':').pop()
+				: '';
+			logSettingsSummaryElement.classList.toggle('no-icon', !driverId);
+			if (driverId)
+			{
+				const icon = createDriverSupportIcon(driverId, '');
+				icon.className = 'log-settings-summary-icon';
+				logSettingsSummaryElement.appendChild(icon);
+			}
+			logSettingsSummaryElement.appendChild(summaryText);
+		}
+
+		function loadLogSettings(callback)
+		{
+			Homey.api('GET', '/getLogFilterOptions/', {}, function (optionsErr, options)
+			{
+				if (optionsErr)
+				{
+					Homey.alert(optionsErr);
+					return;
+				}
+				logFilterOptions = options || {};
+
+				Homey.get('logLevel', function (levelErr, logLevel)
+				{
+					if (levelErr) return Homey.alert(levelErr);
+					logLevelElement.value = String(logLevel === null ? 0 : logLevel);
+					Homey.get('logSource', function (sourceErr, logSource)
+					{
+						if (sourceErr) return Homey.alert(sourceErr);
+						logSourceElement.value = logSource || 'all';
+						Homey.get('logFilterType', function (typeErr, filterType)
+						{
+							if (typeErr) return Homey.alert(typeErr);
+							logFilterTypeElement.value = filterType || 'none';
+							Homey.get('logFilterValue', function (valueErr, filterValue)
+							{
+								if (valueErr) return Homey.alert(valueErr);
+								populateLogFilterValues(filterValue || '');
+								updateLogSettingsSummary();
+								if (callback) callback();
+							});
+						});
+					});
+				});
+			});
+		}
+
+		function closeLogSettings()
+		{
+			logSettingsModalElement.classList.remove('open');
+			openLogSettingsElement.focus();
+		}
+
+		function saveLogSettings()
+		{
+			if (logFilterTypeElement.value !== 'none' && !logFilterValueElement.value)
+			{
+				Homey.alert(translateSetting('settings.selectFilterInformation', 'Select filter information before saving.'));
+				return;
+			}
+
+			const settings = [
+				['logLevel', parseInt(logLevelElement.value)],
+				['logSource', logSourceElement.value],
+				['logFilterType', logFilterTypeElement.value],
+				['logFilterValue', logFilterTypeElement.value === 'none' ? '' : logFilterValueElement.value],
+			];
+			let pending = settings.length;
+			for (const [key, value] of settings)
+			{
+				Homey.set(key, value, function (err)
+				{
+					if (err)
+					{
+						Homey.alert(err);
+						return;
+					}
+					pending--;
+					if (pending === 0)
+					{
+						updateLogSettingsSummary();
+						closeLogSettings();
+					}
+				});
+			}
+		}
+
 		// a method named 'onHomeyReady' must be present in your code
 		function onHomeyReady(Homey)
 		{
@@ -811,6 +1822,8 @@
 			// Tell Homey we're ready to be displayed
 			Homey.ready();
 			initializeBLEStatisticsSorting();
+			initializeDetectedBLEDevicesSorting();
+			initializeAllBLEDevicesSorting();
 
 			// Ensure placeholder accessibility labels are localized at runtime.
 			localizeA11yPlaceholders();
@@ -821,13 +1834,44 @@
 			Homey.get('debugMode', function (err, debugMode)
 			{
 				if (err) return Homey.alert(err);
-				if (debugMode)
+				document.getElementById('simLogTab').classList.toggle('sim-log-tab-debug', debugMode === true);
+			});
+
+			modeHubElement.addEventListener('change', function ()
+			{
+				if (modeHubElement.checked)
 				{
-					document.getElementById("simLogTab").style.display = "block";
+					Homey.set('deviceMode', 'hub');
+					applyDeviceModeVisibility('hub');
+					applyGlobalAuthWarningVisibility(currentTabPage);
+					if (currentTabPage === 'driverSupport')
+					{
+						refreshDriverSupport();
+					}
 				}
 			});
 
-			document.getElementById("defaultOpen").click();
+			modeBLEElement.addEventListener('change', function ()
+			{
+				if (modeBLEElement.checked)
+				{
+					Homey.set('deviceMode', 'ble');
+					applyDeviceModeVisibility('ble');
+					applyGlobalAuthWarningVisibility(currentTabPage);
+					if (currentTabPage === 'driverSupport')
+					{
+						refreshDriverSupport();
+					}
+				}
+			});
+
+			Homey.get('deviceMode', function (err, deviceMode)
+			{
+				const mode = (!err && deviceMode === 'ble') ? 'ble' : 'hub';
+				(mode === 'ble' ? modeBLEElement : modeHubElement).checked = true;
+				document.getElementById(mode === 'ble' ? 'bleDevicesTab' : 'defaultOpen').click();
+				applyDeviceModeVisibility(mode);
+			});
 			refreshBLEStatistics();
 			if (bleStatisticsRefreshTimer)
 			{
@@ -848,6 +1892,83 @@
 				clearBLEStatisticsElement.addEventListener('click', function ()
 				{
 					clearBLEStatistics();
+				});
+			}
+
+			if (scanForBLEDevicesElement)
+			{
+				scanForBLEDevicesElement.addEventListener('click', function ()
+				{
+					refreshDetectedBLEDevices();
+				});
+			}
+
+			if (recordAllBLEDevicesElement)
+			{
+				Homey.get('recordAllBLEDevices', function (err, recordAll)
+				{
+					if (!err)
+					{
+						recordAllBLEDevicesElement.checked = Boolean(recordAll);
+					}
+
+					setAllBLEDevicesVisibility();
+				});
+
+				recordAllBLEDevicesElement.addEventListener('change', function ()
+				{
+					Homey.set('recordAllBLEDevices', recordAllBLEDevicesElement.checked, function (err)
+					{
+						if (err)
+						{
+							Homey.alert(err);
+						}
+					});
+
+					setAllBLEDevicesVisibility();
+				});
+			}
+
+			if (copyAllBLEDevicesElement)
+			{
+				copyAllBLEDevicesElement.addEventListener('click', function ()
+				{
+					copyAllBLEDevicesToClipboard();
+				});
+			}
+
+			if (bleAdvertisementsEnabledElement)
+			{
+				bleAdvertisementsEnabledElement.addEventListener('change', function ()
+				{
+					// The app subscribes/unsubscribes every registered BLE device when this changes.
+					bleAdvertisementsEnabledElement.disabled = true;
+					Homey.set('bleAdvertisementsEnabled', bleAdvertisementsEnabledElement.checked, function (err)
+					{
+						if (err)
+						{
+							Homey.alert(err);
+						}
+
+						setTimeout(refreshBLEAdvertisementSettings, 1500);
+					});
+				});
+			}
+
+			if (clearAllBLEDevicesElement)
+			{
+				clearAllBLEDevicesElement.addEventListener('click', function ()
+				{
+					Homey.api('POST', '/clearAllDetectedBLEDevices/', {}, function (err)
+					{
+						if (err)
+						{
+							Homey.alert(err);
+							return;
+						}
+
+						renderAllBLEDevices([]);
+					});
 				});
 			}
 
@@ -876,17 +1997,17 @@
 				detectedDevicesElement.value = data.devices;
 			});
 
-			Homey.get('logLevel', function (err, logLevel)
+			// Pushed by the app's background BLE discovery so the list stays current without polling.
+			Homey.on('com.switchbot.bleDevicesUpdated', function (data)
 			{
-				if (err) return Homey.alert(err);
-				logLevelElement.value = logLevel.toString();
+				if (data && Array.isArray(data.devices))
+				{
+					renderDetectedBLEDevices(data.devices);
+					refreshAllBLEDevices();
+				}
 			});
 
-			Homey.get('logSource', function (err, logSource)
-			{
-				if (err) return Homey.alert(err);
-				logSourceElement.value = logSource || 'all';
-			});
+			loadLogSettings();
 
 			Homey.get('numConnections', function (err, numConnections)
 			{
@@ -894,23 +2015,43 @@
 				numConnectionsElement.value = numConnections;
 			});
 
-			logLevelElement.addEventListener('change', function (e)
+			logFilterTypeElement.addEventListener('change', function ()
 			{
-				Homey.set('logLevel', parseInt(logLevelElement.value), function (err)
+				populateLogFilterValues('');
+			});
+
+			logSourceElement.addEventListener('change', function ()
+			{
+				populateLogFilterValues(logFilterValueElement.value);
+			});
+
+			openLogSettingsElement.addEventListener('click', function ()
+			{
+				loadLogSettings(function ()
 				{
-					if (err) return Homey.alert(err);
+					logSettingsModalElement.classList.add('open');
+					logLevelElement.focus();
 				});
 			});
 
-			logSourceElement.addEventListener('change', function (e)
+			cancelLogSettingsElement.addEventListener('click', closeLogSettings);
+			saveLogSettingsElement.addEventListener('click', saveLogSettings);
+			logSettingsModalElement.addEventListener('click', function (event)
 			{
-				Homey.set('logSource', logSourceElement.value, function (err)
+				if (event.target === logSettingsModalElement)
 				{
-					if (err) return Homey.alert(err);
-				});
+					closeLogSettings();
+				}
+			});
+			document.addEventListener('keydown', function (event)
+			{
+				if (event.key === 'Escape' && logSettingsModalElement.classList.contains('open'))
+				{
+					closeLogSettings();
+				}
 			});
 
-			loginWithOAuthElement.addEventListener('click', function (e)
+			globalAuthLoginElement.addEventListener('click', function ()
 			{
 				waitCursor(true);
 				Homey.api('GET', '/startOAuth2Flow/', {}, function (err, result)
@@ -949,14 +2090,20 @@
 				});
 			});
 
-			globalAuthLoginElement.addEventListener('click', function ()
-			{
-				loginWithOAuthElement.click();
-			});
-
 			globalAuthLegacyElement.addEventListener('click', function ()
 			{
+				modeHubElement.checked = true;
+				Homey.set('deviceMode', 'hub');
+				applyDeviceModeVisibility('hub');
 				document.getElementById('oldSettingsTab').click();
+			});
+
+			goToStatisticsTabElement.addEventListener('click', function ()
+			{
+				modeBLEElement.checked = true;
+				Homey.set('deviceMode', 'ble');
+				applyDeviceModeVisibility('ble');
+				document.getElementById('bleDevicesTab').click();
 			});
 
 			getDeviceLogElement.addEventListener('click', function (e)
@@ -967,8 +2114,7 @@
 					if (err || (result && !result.hasOAuthSession))
 					{
 						Homey.alert(t('settings.oauthLoginRequiredFirst', 'Please log in with your SwitchBot account first by clicking the Login with SwitchBot Account button.'));
-						oAuthStatusMessageElement.style.display = 'block';
-						loginWithOAuthElement.style.display = 'block';
+						globalAuthWarningElement.style.display = 'block';
 						return;
 					}
 
@@ -1221,6 +2367,11 @@
 		{
 			var i, tabcontent, tablinks;
 
+			currentTabPage = tabPage;
+
+			// Decide the banner's visibility from the cached auth state before the tab is drawn, so it never flashes
+			applyGlobalAuthWarningVisibility(tabPage);
+
 			// Get all elements with class="tabcontent" and hide them
 			tabcontent = document.getElementsByClassName("tabcontent");
 			for (i = 0; i < tabcontent.length; i++)
@@ -1241,15 +2392,10 @@
 
 			if (tabPage == 'log')
 			{
-				// Refresh the log data
-				Homey.get('logLevel', function (err, logLevel)
-				{
-					if (err) return Homey.alert(err);
-					logLevelElement.value = logLevel;
-				});
+				loadLogSettings();
 
 				// Make the log text area fill the page
-				infoLogElement.style.width = (logLevelElement.offsetWidth) + 'px';
+				infoLogElement.style.width = infoLogElement.parentElement.clientWidth + 'px';
 				infoLogElement.style.height = (window.innerHeight - infoLogElement.offsetTop - 60) + 'px';
 			}
 			else if (tabPage == 'detected')
@@ -1300,6 +2446,23 @@
 			else if (tabPage == 'statistics')
 			{
 				refreshBLEStatistics();
+			}
+			else if (tabPage == 'bleDevices')
+			{
+				refreshDetectedBLEDevices();
+			}
+			else if (tabPage == 'bleSettings')
+			{
+				refreshBLEAdvertisementSettings();
+			}
+			else if (tabPage == 'driverSupport')
+			{
+				refreshDriverSupport();
+			}
+
+			if (homeyInstance)
+			{
+				checkOAuthStatus(homeyInstance);
 			}
 		}
 

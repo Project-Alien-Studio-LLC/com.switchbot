@@ -1,0 +1,1 @@
+{ "type": "string", "title": { "en": "Safety monitor" }, "getable": true, "setable": false, "icon": "/assets/vacuum_state.svg" }

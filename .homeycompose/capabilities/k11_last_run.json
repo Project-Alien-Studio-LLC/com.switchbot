@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Last scheduled run"
+  },
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/vacuum_state.svg"
+}

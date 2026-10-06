@@ -1,0 +1,76 @@
+{
+  "id": "lock_pro_matter_hub",
+  "name": {
+    "en": "Lock Pro Matter Enabled(HUB)",
+    "no": "Lock Pro Matter Enabled(HUB)",
+    "nl": "Lock Pro Matter Enabled(HUB)",
+    "da": "Lock Pro Matter Enabled(HUB)",
+    "de": "Lock Pro Matter Enabled(HUB)",
+    "es": "Lock Pro Matter Enabled(HUB)",
+    "fr": "Lock Pro Matter Enabled(HUB)",
+    "it": "Lock Pro Matter Enabled(HUB)",
+    "sv": "Lock Pro Matter Enabled(HUB)",
+    "pl": "Lock Pro Matter Enabled(HUB)",
+    "ru": "Lock Pro Matter Enabled(HUB)",
+    "ko": "Lock Pro Matter Enabled(HUB)"
+  },
+  "class": "lock",
+  "capabilities": [
+    "lock",
+    "deadbolt",
+    "nightlatchunlock",
+    "unlock",
+    "locked",
+    "locked_status",
+    "alarm_generic",
+    "alarm_contact",
+    "measure_battery"
+  ],
+  "capabilitiesOptions": {
+    "locked": {
+      "getable": true,
+      "setable": false,
+      "uiComponent": null
+    },
+    "alarm_generic": {
+      "title": {
+        "en": "Door Jammed",
+        "no": "Dør blokkert",
+        "nl": "Deur Vastgelopen",
+        "da": "Dør Fastklemt",
+        "de": "Tür blockiert",
+        "es": "Puerta Atascada",
+        "fr": "Porte Bloquée",
+        "it": "Porta Bloccata",
+        "sv": "Dörr Fastnat",
+        "pl": "Drzwi Zacięte",
+        "ru": "Дверь Заклинило",
+        "ko": "문이 막힘"
+      }
+    },
+    "alarm_contact": {
+      "title": {
+        "en": "Door Open",
+        "no": "Dør åpen",
+        "nl": "Deur Open",
+        "da": "Dør Åben",
+        "de": "Tür Offen",
+        "es": "Puerta Abierta",
+        "fr": "Porte Ouverte",
+        "it": "Porta Aperta",
+        "sv": "Dörr Öppen",
+        "pl": "Drzwi Otwarte",
+        "ru": "Дверь Открыта",
+        "ko": "문 열림"
+      }
+    }
+  },
+  "energy": {
+    "batteries": [
+      "OTHER"
+    ]
+  },
+  "$extends": [
+    "hubDriver"
+  ]
+}

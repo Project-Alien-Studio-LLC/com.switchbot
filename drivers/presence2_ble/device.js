@@ -4,6 +4,12 @@
 
 const Homey = require('homey');
 
+// Presence sensors advertise intermittently to conserve battery. A failed
+// point-in-time lookup does not prove the peripheral is offline: Homey can
+// still receive advertisements between those lookups. Only mark it unavailable
+// after a sustained absence of confirmed advertisements.
+const PERIPHERAL_UNAVAILABLE_AFTER_MS = 15 * 60 * 1000;
+
 class PresenceBLEDevice extends Homey.Device
 {
 
@@ -37,8 +43,35 @@ class PresenceBLEDevice extends Homey.Device
 		this.bestRSSI = 100;
 		this.bestHub = '';
 		this.lastHubStateFingerprint = null;
+		this.lastPeripheralSeenAt = Date.now();
 		this.homey.app.registerBLEPolling(this);
+		// Availability from a previous app run is not reliable for a
+		// battery-powered beacon. Start optimistically and let sustained scan
+		// misses determine whether the sensor is genuinely unreachable.
+		await this.setAvailable();
 		this.log('PresenceBLEDevice has been initialized');
+	}
+
+	async markPeripheralAvailable()
+	{
+		this.lastPeripheralSeenAt = Date.now();
+		await this.setAvailable();
+	}
+
+	async recordPeripheralMiss(deviceMac)
+	{
+		const elapsedSincePeripheralSeen = Date.now() - (this.lastPeripheralSeenAt || 0);
+		if (elapsedSincePeripheralSeen < PERIPHERAL_UNAVAILABLE_AFTER_MS)
+		{
+			this.homey.app.updateLog(
+				`Ignoring transient Presence BLE scan miss for ${deviceMac}; last advertisement was ${elapsedSincePeripheralSeen}ms ago`,
+				3,
+				'ble',
+			);
+			return;
+		}
+
+		await this.setUnavailable(`SwitchBot BLE device not found: ${deviceMac}`);
 	}
 
 	logESP32StateIfChanged(state)
@@ -169,11 +202,16 @@ class PresenceBLEDevice extends Homey.Device
 				{
 					const name = this.getName();
 					this.homey.app.updateLog(`BLE device ${name} (MAC: ${deviceMac}) not found`, 'ble');
+					await this.recordPeripheralMiss(deviceMac);
+					this.homey.app.markBLEPollServiceData(this, false);
 					return;
 				}
 
 				this.homey.app.updateLog(this.homey.app.varToString(bleAdvertisement), 4, 'ble');
 				const { rssi } = bleAdvertisement;
+				// A visible advertisement proves that the sensor is reachable even if
+				// this particular packet has no parsable service data.
+				await this.markPeripheralAvailable();
 				this.setCapabilityValue('rssi', rssi).catch(this.error);
 
 				const data = this.driver.parse(bleAdvertisement);
@@ -182,6 +220,7 @@ class PresenceBLEDevice extends Homey.Device
 					this.homey.app.markBLEPollServiceData(this, true, rssi);
 					this.homey.app.updateLog(`Parsed Presence BLE (MAC: ${deviceMac}): ${this.homey.app.varToString(data)}`, 3, 'ble');
 					this.updateCapabilities(data);
+					await this.markPeripheralAvailable();
 					this.homey.app.updateLog(`Parsed Presence BLE (MAC: ${deviceMac}): battery = ${data.serviceData.battery}`, 3, 'ble');
 				}
 				else
@@ -203,6 +242,7 @@ class PresenceBLEDevice extends Homey.Device
 			if (/Peripheral\s+Not\s+Found/i.test(message))
 			{
 				this.homey.app.updateLog(`${message} (MAC: ${deviceMac})`, 0, 'ble');
+				await this.recordPeripheralMiss(deviceMac);
 			}
 			else
 			{
@@ -246,6 +286,7 @@ class PresenceBLEDevice extends Homey.Device
 					}
 
 					this.updateCapabilities(data);
+					await this.markPeripheralAvailable();
 				}
 			}
 		}

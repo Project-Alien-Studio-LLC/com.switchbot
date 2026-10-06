@@ -3,9 +3,46 @@
 'use strict';
 
 module.exports = {
+	async recoverPresenceReceiver({ homey })
+	{
+		const { app } = homey;
+		if (app.homeyWebhookRegistrationRunning) return { accepted: false, reason: 'Registration already running' };
+		const last = Date.parse(app.webhookDiagnostics.lastRecoveryAt || '');
+		if (Date.now() - last < 30 * 60000) return { accepted: false, reason: 'Recovery cooldown' };
+		if (app.homeyWebhook && !app.webhookDiagnostics.lastRegistrationError) return { accepted: false, reason: 'No confirmed receiver fault' };
+		app.webhookDiagnostics.lastRecoveryAt = new Date().toISOString();
+		await app.doWebhookReg();
+		return { accepted: true, receiverPresent: Boolean(app.homeyWebhook), error: app.webhookDiagnostics.lastRegistrationError || null };
+	},
+	async getPresenceDiagnostics({ homey })
+	{
+		const devices = [];
+		for (const driver of Object.values(homey.drivers.getDrivers()))
+		{
+			for (const device of Object.values(driver.getDevices()))
+			{
+				if (typeof device.getPresenceDiagnostics === 'function') devices.push(device.getPresenceDiagnostics());
+			}
+		}
+		return {
+			generatedAt: new Date().toISOString(),
+			polling: homey.app.hubPollingStatus || null,
+			webhook: {
+				...homey.app.webhookDiagnostics,
+				registrationInProgress: Boolean(homey.app.homeyWebhookRegistrationRunning),
+				receiverPresent: Boolean(homey.app.homeyWebhook),
+				registeredDeviceIds: [...(homey.app.devicesMACs || [])],
+			},
+			devices,
+		};
+	},
 	async getLog({ homey, query })
 	{
 		return homey.app.diagLog;
+	},
+	async getLogFilterOptions({ homey, query })
+	{
+		return homey.app.getLogFilterOptions();
 	},
 	async getDetect({ homey, query })
 	{
@@ -30,6 +67,36 @@ module.exports = {
 	{
 		homey.app.clearBLEStatistics(true);
 		return 'OK';
+	},
+	async getDetectedBLEDevices({ homey, query })
+	{
+		if (homey.app.isBLEInitialising())
+		{
+			return { initialising: true, devices: [] };
+		}
+
+		return { initialising: false, devices: await homey.app.getDetectedBLEDevices() };
+	},
+	async getAllDetectedBLEDevices({ homey, query })
+	{
+		return homey.app.getAllDetectedBLEDevices();
+	},
+	async getBLEAdvertisementSettings({ homey, query })
+	{
+		return homey.app.getBLEAdvertisementSettings();
+	},
+	async clearAllDetectedBLEDevices({ homey, query })
+	{
+		homey.app.clearAllDetectedBLEDevices();
+		return 'OK';
+	},
+	async GetDriverSupportMatrix({ homey, body })
+	{
+		return homey.app.getDriverSupportMatrix((body && body.mode) || 'hub');
+	},
+	async SendUnsupportedDevices({ homey, body })
+	{
+		return homey.app.sendUnsupportedDevices(body && body.unsupportedDevices);
 	},
 	async clearLog({ homey, query })
 	{

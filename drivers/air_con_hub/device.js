@@ -41,7 +41,7 @@ class AirConHubDevice extends HubDevice
 		}
 		else
 		{
-			this.registerMultipleCapabilityListener(['onoff', 'target_temperature', 'aircon_mode', 'aircon_fan_speed'], this.onCapabilityAll.bind(this));
+			this.registerMultipleCapabilityListener(['target_temperature', 'aircon_mode', 'aircon_fan_speed'], this.onCapabilityAll.bind(this));
 		}
 
 		this.registerCapabilityListener('power_off', this.onCapabilityPowerOff.bind(this));
@@ -118,7 +118,10 @@ class AirConHubDevice extends HubDevice
 		let fan;
 		let onOff = 'on';
 
-		if (valueOj.onoff !== undefined && valueOj.onOff === false)
+		// Device capability updates provide a boolean, while the flow card uses the
+		// string values "on" and "off". Accept both so an explicit Flow "off"
+		// command cannot be encoded as an "on" command.
+		if (valueOj.onoff === false || valueOj.onoff === 'off')
 		{
 			onOff = 'off';
 		}

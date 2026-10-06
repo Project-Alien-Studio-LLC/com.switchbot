@@ -1,0 +1,1 @@
+{ "type": "number", "title": { "en": "Status age" }, "getable": true, "setable": false, "units": { "en": "min" }, "decimals": 0, "min": 0, "insights": false, "icon": "/assets/vacuum_state.svg" }

@@ -1,0 +1,9 @@
+[
+  { "id": "k11_morning_scene", "type": "text", "label": { "en": "Verified Quiet scene ID allowed at home at 05:00" }, "value": "" },
+  { "id": "k11_room_scene", "type": "text", "label": { "en": "Native vacuum-only room scene ID" }, "value": "" },
+  { "id": "k11_room_verified", "type": "checkbox", "label": { "en": "Room scene map and vacuum-only action verified" }, "value": false },
+  { "id": "k11_test_verified", "type": "checkbox", "label": { "en": "Supervised Start, Pause, Dock and room test passed" }, "value": false },
+  { "id": "k11_schedule_armed", "type": "checkbox", "label": { "en": "Allow automatic room cleaning" }, "value": false },
+  { "id": "k11_quiet_start", "type": "text", "label": { "en": "Quiet hours start (HH:MM, Homey local time)" }, "value": "22:00" },
+  { "id": "k11_quiet_end", "type": "text", "label": { "en": "Quiet hours end (HH:MM, Homey local time)" }, "value": "09:00" }
+]

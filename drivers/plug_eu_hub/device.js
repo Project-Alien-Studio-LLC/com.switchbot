@@ -86,7 +86,7 @@ class PlugEUHubDevice extends HubDevice
 					this.setCapabilityValue('measure_current', data.electricCurrent / 1000).catch(this.error);
 					this.setCapabilityValue('measure_voltage', data.voltage).catch(this.error);
 					this.setCapabilityValue('measure_power', data.power).catch(this.error);
-					this.setCapabilityValue('meter_power', data.usedElectricity / 60000).catch(this.error);
+					await this.setDailyEnergyMeterValue('meter_power', data.usedElectricity);
 				}
 			}
 			this.unsetWarning().catch(this.error);

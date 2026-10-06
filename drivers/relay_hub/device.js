@@ -12,6 +12,10 @@ class RelayHubDevice extends HubDevice
 	 */
 	async onInit()
 	{
+		// Relay Switch 1PM devices can expose status through the legacy API but
+		// may reject its command endpoint with 190 ("not support device type").
+		// Prefer the account OAuth command endpoint, which supports the relay.
+		this.preferOAuthCommands = true;
 		this.initialised = false;
 		await super.onInit();
 
@@ -129,8 +133,11 @@ class RelayHubDevice extends HubDevice
 				{
 					this.setCapabilityValue('measure_voltage', data.voltage).catch(this.error);
 					this.setCapabilityValue('measure_power', data.power).catch(this.error);
-					this.setCapabilityValue('measure_current', data.electricCurrent).catch(this.error);
-					this.setCapabilityValue('meter_power', data.usedElectricity).catch(this.error);
+					// Relay Switch 1PM reports electricCurrent in mA; measure_current expects Amps.
+					this.setCapabilityValue('measure_current', data.electricCurrent / 1000).catch(this.error);
+					// SwitchBot resets usedElectricity daily. Convert it to the monotonic
+					// cumulative kWh value required by Homey's meter_power capability.
+					await this.setDailyEnergyMeterValue('meter_power', data.usedElectricity);
 				}
 			}
 			this.unsetWarning().catch(this.error);

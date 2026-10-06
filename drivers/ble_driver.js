@@ -22,6 +22,9 @@ class BLEDriver extends Homey.Driver
 
 	async getBLEDevices(type)
 	{
+		// Wait before claiming the radio, otherwise the startup discovery cannot run.
+		await this.homey.app.whenInitialBLEDiscoveryComplete();
+
 		this.homey.app.bleDiscovery = true;
 		this.homey.app.updateLog('BLE Discovery started', 'ble');
 		this.homey.app.detectedDevices = '';
@@ -81,50 +84,35 @@ class BLEDriver extends Homey.Driver
 				await this.homey.app.Delay(500);
 			}
 
-			const bleAdvertisements = await this.homey.ble.discover([], 5000);
-			this.homey.app.updateLog(`BLE Discovery found: ${this.homey.app.varToString(bleAdvertisements)}`, 3, 'ble');
+			// Use the app's background discovery cache rather than scanning again, so devices that
+			// were seen since startup are offered even if they miss this moment's advertisement.
+			const cachedDevices = this.homey.app.getCachedBLEDevices(type);
+			this.homey.app.updateLog(`BLE Discovery using cache: ${cachedDevices.length} device(s) of type ${type}`, 2, 'ble');
 
-			this.homey.app.detectedDevices += '\r\nBLE Hub Found device:\r\n';
-			this.homey.app.detectedDevices += this.homey.app.varToString(bleAdvertisements);
+			this.homey.app.detectedDevices += '\r\nBLE cached devices:\r\n';
+			this.homey.app.detectedDevices += this.homey.app.varToString(cachedDevices);
 			this.homey.api.realtime('com.switchbot.detectedDevicesUpdated', { devices: this.homey.app.detectedDevices }).catch(this.error);
 
-			for (const bleAdvertisement of bleAdvertisements)
+			for (const cachedDevice of cachedDevices)
 			{
 				try
 				{
-					const deviceData = this.parse(bleAdvertisement);
-					if (deviceData)
-					{
-						if (deviceData.serviceData.model === type)
+					const lcAddress = cachedDevice.address.toLowerCase();
+					const device = {
+						name: lcAddress,
+						data:
 						{
-							if (bleAdvertisement.address)
-							{
-								const lcAddress = bleAdvertisement.address.toLowerCase();
-								const device = {
-									name: lcAddress,
-									data:
-									{
-										id: deviceData.id,
-										pid: deviceData.pid,
-										address: lcAddress,
-										model: deviceData.serviceData.model,
-										modelName: deviceData.serviceData.modelName,
-									},
-								};
+							id: cachedDevice.id,
+							pid: cachedDevice.pid,
+							address: lcAddress,
+							model: cachedDevice.model,
+							modelName: cachedDevice.modelName,
+						},
+					};
 
-								this.homey.app.detectedDevices += '\r\nBLE Homey Found device:\r\n';
-								this.homey.app.detectedDevices += this.homey.app.varToString(device);
-								if (this.homey.app.BLEHub)
-								{
-									this.homey.api.realtime('com.switchbot.detectedDevicesUpdated', { devices: this.homey.app.detectedDevices });
-								}
-
-								if (this.checkExist(devices, device) < 0)
-								{
-									devices.push(device);
-								}
-							}
-						}
+					if (this.checkExist(devices, device) < 0)
+					{
+						devices.push(device);
 					}
 				}
 				catch (err)
@@ -202,6 +190,41 @@ class BLEDriver extends Homey.Driver
 	 * If the specified `device` does not represent any switchbot
 	 * device, this method will return `null`.
 	 * ---------------------------------------------------------------- */
+	_normalizeBLEBuffer(value)
+	{
+		if (Buffer.isBuffer(value))
+		{
+			return value;
+		}
+
+		if (value instanceof Uint8Array || Array.isArray(value))
+		{
+			return Buffer.from(value);
+		}
+
+		if (value && value.type === 'Buffer' && Array.isArray(value.data))
+		{
+			return Buffer.from(value.data);
+		}
+
+		return null;
+	}
+
+	_getBLEServiceDataEntries(serviceData)
+	{
+		if (Array.isArray(serviceData))
+		{
+			return serviceData;
+		}
+
+		if (serviceData && typeof serviceData === 'object')
+		{
+			return Object.entries(serviceData).map(([uuid, data]) => ({ uuid, data }));
+		}
+
+		return [];
+	}
+
 	parse(device)
 	{
 		if (!device)
@@ -236,12 +259,13 @@ class BLEDriver extends Homey.Driver
 			return null;
 		}
 
-		if (!Array.isArray(device.serviceData) || !device.serviceData[0])
+		const serviceData = this._getBLEServiceDataEntries(device.serviceData);
+		if (!serviceData[0])
 		{
 			return null;
 		}
 
-		const { uuid } = device.serviceData[0];
+		const { uuid } = serviceData[0];
 		if (typeof uuid !== 'string')
 		{
 			return null;
@@ -250,11 +274,12 @@ class BLEDriver extends Homey.Driver
 		{
 			return null;
 		}
-		const buf = device.serviceData[0].data;
-		if (!buf || !Buffer.isBuffer(buf) || buf.length < 3)
+		const buf = this._normalizeBLEBuffer(serviceData[0].data);
+		if (!buf || buf.length < 3)
 		{
 			return null;
 		}
+		const manufacturerData = this._normalizeBLEBuffer(device.manufacturerData);
 
 		const model = buf.slice(0, 1).toString('utf8');
 		let sd = null;
@@ -288,31 +313,31 @@ class BLEDriver extends Homey.Driver
 		}
 		else if (model === 'u')
 		{ // WoBulb
-			sd = this._parseServiceDataForWoBulb(device.manufacturerData);
+			sd = this._parseServiceDataForWoBulb(manufacturerData);
 		}
 		else if ((model === 'w') || (model === 'W'))
 		{ // WoIndoor/Outdoor temp/humidity
-			sd = this._parseServiceDataForWoIOSensor(buf, device.manufacturerData);
+			sd = this._parseServiceDataForWoIOSensor(buf, manufacturerData);
 		}
 		else if (model === 'x')
 		{ // WoTilt
-			sd = this._parseServiceDataForWoTilt(buf, device.manufacturerData);
+			sd = this._parseServiceDataForWoTilt(buf, manufacturerData);
 		}
 		else if (model === '&')
 		{ // WoWaterLeak
-			sd = this._parseServiceDataForWaterLeak(buf, device.manufacturerData);
+			sd = this._parseServiceDataForWaterLeak(buf, manufacturerData);
 		}
 		else if (model === '4')
 		{ // WoMeterPro
-			sd = this._parseServiceDataForProMeter(buf, device.manufacturerData);
+			sd = this._parseServiceDataForProMeter(buf, manufacturerData);
 		}
 		else if (model === '5')
 		{ // WoMeterPro(CO2)
-			sd = this._parseServiceDataForCO2Meter(buf, device.manufacturerData);
+			sd = this._parseServiceDataForCO2Meter(buf, manufacturerData);
 		}
 		else if (model === '?')
 		{ // WoPlug
-			sd = this._parseServiceDataForPlug(buf, device.manufacturerData);
+			sd = this._parseServiceDataForPlug(buf, manufacturerData);
 		}
 		else if (model === "'" || model === ',')
 		{ // WoCRollerBlind
@@ -320,7 +345,7 @@ class BLEDriver extends Homey.Driver
 		}
 		else if ((buf.length === 7) && buf[5] === 0xcc && buf[6] === 0xc8 && (buf[4] === 0x00 || buf[4] === 0x10))
 		{ // WoPresenceMM
-			sd = this._parseServiceDataForPresenceMM(buf, device.manufacturerData);
+			sd = this._parseServiceDataForPresenceMM(buf, manufacturerData);
 		}
 		else
 		{

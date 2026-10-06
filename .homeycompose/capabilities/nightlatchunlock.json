@@ -1,0 +1,21 @@
+{
+	"type": "boolean",
+	"getable": false,
+	"setable": true,
+	"uiComponent": "button",
+	"title": {
+		"en": "Night Latch Unlock",
+		"no": "Lås opp nattlås",
+		"nl": "Nachtslot Ontgrendelen",
+		"da": "Lås Natlås Op",
+		"de": "Nachtriegel Entriegeln",
+		"es": "Desbloquear Pestillo Nocturno",
+		"fr": "Déverrouiller le Verrou de Nuit",
+		"it": "Sblocca Chiavistello Notturno",
+		"sv": "Lås Upp Nattlås",
+		"pl": "Odblokuj Zasuwę Nocną",
+		"ru": "Разблокировать Ночной Замок",
+		"ko": "나이트 래치 잠금 해제"
+	},
+	"icon": "/assets/locked.svg"
+}

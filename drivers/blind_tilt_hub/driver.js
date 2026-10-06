@@ -22,7 +22,13 @@ class HubBlindTiltDriver extends HubDriver
 
 	async onPairListDevices({ oAuth2Client })
 	{
-		return this.getHUBDevices(oAuth2Client, 'Blind Tilt', false, true);
+		// SwitchBot reports the group master for a Blind Tilt group as the
+		// controllable device, but its `hubDeviceId` can be stale or point at a
+		// non-Hub device. Requiring that field makes the group impossible to add
+		// to Homey and leaves users with only the unreliable local BLE devices.
+		// `getHUBDevices` still selects the master only, so this does not expose
+		// the individual group members for duplicate pairing.
+		return this.getHUBDevices(oAuth2Client, 'Blind Tilt', false, false);
 	}
 
 }

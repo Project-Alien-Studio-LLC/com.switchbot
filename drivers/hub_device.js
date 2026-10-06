@@ -3,12 +3,28 @@
 'use strict';
 
 const { OAuth2Device } = require('homey-oauth2app');
+const cumulativeDailyMeter = require('../lib/cumulative-daily-meter');
 
 const MISSING_AUTH_LOG_THROTTLE_MS = 5 * 60 * 1000;
 const DEVICE_OFFLINE_COOLDOWN_MS = 30 * 1000;
 
 class HubDevice extends OAuth2Device
 {
+
+	async setDailyEnergyMeterValue(capabilityId, usedElectricityWattMinutes)
+	{
+		const dailyKWh = Number(usedElectricityWattMinutes) / 60000;
+		const storeKey = `cumulative_daily_meter_${capabilityId.replace(/[^a-z0-9]/gi, '_')}`;
+		const result = cumulativeDailyMeter({
+			dailyKWh,
+			previousState: this.getStoreValue(storeKey),
+			currentCapabilityValue: this.getCapabilityValue(capabilityId),
+		});
+
+		await this.setStoreValue(storeKey, result.state);
+		await this.setCapabilityValue(capabilityId, result.value);
+		return result.value;
+	}
 
 	getOAuth2ClientForDevice()
 	{
@@ -262,7 +278,11 @@ class HubDevice extends OAuth2Device
 		const dd = this.getData();
 		const oAuth2Client = this.getOAuth2ClientForDevice();
 
-		if (this.homey.app.openToken)
+		// Newer SwitchBot devices such as Curtain3 are not controllable through
+		// the legacy API-token endpoint even when that endpoint can still return
+		// status. Let those drivers opt into OAuth commands, with the token route
+		// retained as a fallback when OAuth is unavailable.
+		if (this.homey.app.openToken && (!this.preferOAuthCommands || !oAuth2Client))
 		{
 			this.homey.app.updateLog(`Sending ${this.homey.app.varToString(data)} to ${dd.id} using API key`, 3, 'hub');
 			try
@@ -272,6 +292,7 @@ class HubDevice extends OAuth2Device
 			catch (err)
 			{
 				this.homey.app.updateLog(this.homey.app.varToString(err), 'hub');
+				throw err;
 			}
 			this.homey.app.updateLog(`Success sending command to ${dd.id} using API key`, 'hub');
 			return result;
@@ -307,6 +328,10 @@ class HubDevice extends OAuth2Device
 
 				if (!result)
 				{
+					if (this.requireCommandAcceptance)
+					{
+						throw new Error('No SwitchBot command response; acceptance is unknown');
+					}
 					if (attempt < maxAttempts)
 					{
 						const baseDelay = 700 * (2 ** (attempt - 1));
@@ -322,6 +347,13 @@ class HubDevice extends OAuth2Device
 
 				responseCode = Number.parseInt(result.statusCode ?? result.body?.statusCode ?? 100, 10);
 				responseMessage = result.message ?? result.body?.message ?? '';
+
+				// Opt-in for devices where a status probe cannot prove a command ran.
+				if (this.requireCommandAcceptance && Number(result.statusCode ?? result.body?.statusCode) !== 100)
+				{
+					const rejectionCode = result.statusCode ?? result.body?.statusCode ?? 'missing status code';
+					throw new Error(`SwitchBot command not accepted: ${rejectionCode} ${responseMessage}`.trim());
+				}
 
 				if ((responseCode === 171) && (attempt < maxAttempts))
 				{
@@ -403,6 +435,10 @@ class HubDevice extends OAuth2Device
 
 		// No API key or OAuth client available, so we cannot send the command
 		this.logMissingAuthOnce(dd.id);
+		if (this.requireCommandAcceptance)
+		{
+			throw new Error('SwitchBot authentication is unavailable; command was not sent');
+		}
 		return false;
 	}
 
@@ -509,13 +545,9 @@ class HubDevice extends OAuth2Device
 		const oAuth2Client = this.getOAuth2ClientForDevice();
 		if (this.homey.app.openToken)
 		{
-			const data = await this.homey.app.hub.startScene(dd.id);
-			if (data.statusCode !== 100)
-			{
-				throw new Error(`${data.statusCode}: ${data.message} (${this.homey.app.apiCalls}) API calls`);
-			}
-
-			return data.body;
+			// hub_interface.startScene validates SwitchBot's response code and
+			// returns true on success, rather than the OAuth response object.
+			return this.homey.app.hub.startScene(dd.id);
 		}
 
 		if (oAuth2Client)

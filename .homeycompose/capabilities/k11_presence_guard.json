@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Cleaning presence gate"
+  },
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/home.svg"
+}

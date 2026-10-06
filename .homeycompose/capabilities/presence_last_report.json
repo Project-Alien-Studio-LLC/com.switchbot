@@ -1,0 +1,7 @@
+{
+	"type": "string",
+	"title": { "en": "Last valid status received" },
+	"icon": "/assets/clock.svg",
+	"getable": true,
+	"setable": false
+}

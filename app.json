@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.switchbot",
-  "version": "2.0.87",
+  "version": "2.0.100",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local",
@@ -538,9 +538,21 @@
     ]
   },
   "api": {
+    "recoverPresenceReceiver": {
+      "method": "post",
+      "path": "/recoverPresenceReceiver/"
+    },
+    "getPresenceDiagnostics": {
+      "method": "get",
+      "path": "/getPresenceDiagnostics/"
+    },
     "getLog": {
       "method": "get",
       "path": "/getLog/"
+    },
+    "getLogFilterOptions": {
+      "method": "get",
+      "path": "/getLogFilterOptions/"
     },
     "getDetect": {
       "method": "get",
@@ -553,6 +565,30 @@
     "clearBLEStatistics": {
       "method": "post",
       "path": "/clearBLEStatistics/"
+    },
+    "getDetectedBLEDevices": {
+      "method": "get",
+      "path": "/getDetectedBLEDevices/"
+    },
+    "getAllDetectedBLEDevices": {
+      "method": "get",
+      "path": "/getAllDetectedBLEDevices/"
+    },
+    "getBLEAdvertisementSettings": {
+      "method": "get",
+      "path": "/getBLEAdvertisementSettings/"
+    },
+    "clearAllDetectedBLEDevices": {
+      "method": "post",
+      "path": "/clearAllDetectedBLEDevices/"
+    },
+    "GetDriverSupportMatrix": {
+      "method": "post",
+      "path": "/GetDriverSupportMatrix/"
+    },
+    "SendUnsupportedDevices": {
+      "method": "post",
+      "path": "/SendUnsupportedDevices/"
     },
     "clearLog": {
       "method": "post",
@@ -940,7 +976,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=lock_ultra_hub"
+            "filter": "driver_id=lock_ultra_hub|lock_pro_matter_hub"
           }
         ],
         "id": "latched"
@@ -1033,7 +1069,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=lock_ultra_hub|lock_vision_pro_hub"
+            "filter": "driver_id=lock_ultra_hub|lock_vision_pro_hub|lock_pro_matter_hub"
           }
         ],
         "id": "locked"
@@ -1560,7 +1596,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=lock_ultra_hub|lock_vision_pro_hub"
+            "filter": "driver_id=lock_ultra_hub|lock_vision_pro_hub|lock_pro_matter_hub"
           }
         ],
         "id": "unlocked"
@@ -2554,6 +2590,71 @@
             "filter": "driver_id=contact_ble"
           }
         ]
+      },
+      {
+        "id": "k11_run_event",
+        "title": {
+          "en": "A scheduled cleaning status changes"
+        },
+        "tokens": [
+          {
+            "name": "schedule",
+            "type": "string",
+            "title": {
+              "en": "Schedule"
+            }
+          },
+          {
+            "name": "stage",
+            "type": "string",
+            "title": {
+              "en": "Stage"
+            }
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "title": {
+              "en": "Message"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=robot_vacuum_K11_hub"
+          }
+        ]
+      },
+      {
+        "id": "k11_attention",
+        "title": {
+          "en": "K11+ needs attention"
+        },
+        "tokens": [
+          {
+            "name": "message",
+            "type": "string",
+            "title": {
+              "en": "Message"
+            }
+          },
+          {
+            "name": "reason",
+            "type": "string",
+            "title": {
+              "en": "Reason"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=robot_vacuum_K11_hub"
+          }
+        ]
       }
     ],
     "conditions": [
@@ -2890,7 +2991,7 @@
           {
             "name": "device",
             "type": "device",
-            "filter": "driver_id=lock_ultra_hub"
+            "filter": "driver_id=lock_ultra_hub|lock_pro_matter_hub"
           }
         ],
         "platforms": [
@@ -3086,7 +3187,7 @@
           {
             "name": "device",
             "type": "device",
-            "filter": "driver_id=lock_ultra_hub|lock_vision_pro_hub"
+            "filter": "driver_id=lock_ultra_hub|lock_vision_pro_hub|lock_pro_matter_hub"
           }
         ],
         "platforms": [
@@ -3150,6 +3251,34 @@
           "cloud"
         ],
         "id": "next"
+      },
+      {
+        "title": {
+          "en": "Night latch unlock",
+          "no": "Lås opp nattlås",
+          "nl": "Nachtslot ontgrendelen",
+          "da": "Lås natlås op",
+          "de": "Nachtriegel entriegeln",
+          "es": "Desbloquear pestillo nocturno",
+          "fr": "Déverrouiller le verrou de nuit",
+          "it": "Sblocca chiavistello notturno",
+          "sv": "Lås upp nattlås",
+          "pl": "Odblokuj zasuwę nocną",
+          "ru": "Разблокировать ночной замок",
+          "ko": "나이트 래치 잠금 해제"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lock_pro_matter_hub"
+          }
+        ],
+        "platforms": [
+          "local",
+          "cloud"
+        ],
+        "id": "nightlatchunlock"
       },
       {
         "title": {
@@ -5104,7 +5233,7 @@
           {
             "name": "device",
             "type": "device",
-            "filter": "driver_id=lock_ultra_hub|lock_vision_pro_hub"
+            "filter": "driver_id=lock_ultra_hub|lock_vision_pro_hub|lock_pro_matter_hub"
           }
         ],
         "platforms": [
@@ -5844,6 +5973,204 @@
             "step": 1,
             "labelMultiplier": 1,
             "labelDecimals": 0
+          }
+        ]
+      },
+      {
+        "id": "k11_run_schedule",
+        "title": {
+          "en": "Run room schedule with safety checks"
+        },
+        "titleFormatted": {
+          "en": "[[schedule]]: [[decision]], scene [[scene]] at [[time]] on weekdays [[days]]"
+        },
+        "hint": {
+          "en": "Run if safe requires at least 30 minutes away. Quiet morning permits the approved 05:00 morning scene at home or away. Every run still requires the configured time/day, fresh online status, idle robot and 30% battery. Reserves each daily slot once; no retry."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=robot_vacuum_K11_hub"
+          },
+          {
+            "name": "schedule",
+            "type": "text",
+            "title": {
+              "en": "Stable schedule key"
+            }
+          },
+          {
+            "name": "scene",
+            "type": "autocomplete",
+            "title": {
+              "en": "Paired vacuum scene"
+            }
+          },
+          {
+            "name": "time",
+            "type": "time",
+            "title": {
+              "en": "Approved local time"
+            }
+          },
+          {
+            "name": "days",
+            "type": "text",
+            "title": {
+              "en": "Weekdays (0=Sun, comma-separated)"
+            }
+          },
+          {
+            "name": "decision",
+            "type": "dropdown",
+            "title": {
+              "en": "Decision"
+            },
+            "values": [
+              {
+                "id": "run",
+                "label": {
+                  "en": "Run if safe"
+                }
+              },
+              {
+                "id": "home",
+                "label": {
+                  "en": "Skip because I am home"
+                }
+              },
+              {
+                "id": "quiet_morning",
+                "label": {
+                  "en": "05:00 Quiet morning at home or away"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "k11_schedule_control",
+        "title": {
+          "en": "Set vacuum schedule control"
+        },
+        "titleFormatted": {
+          "en": "[[control]]"
+        },
+        "hint": {
+          "en": "Changes schedules only; never starts, pauses or docks the robot. Skip resets at the next configured slot, including a presence or master-pause skip."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=robot_vacuum_K11_hub"
+          },
+          {
+            "name": "control",
+            "type": "dropdown",
+            "title": {
+              "en": "Control"
+            },
+            "values": [
+              {
+                "id": "skip",
+                "label": {
+                  "en": "Skip next cleaning"
+                }
+              },
+              {
+                "id": "unskip",
+                "label": {
+                  "en": "Cancel skip next cleaning"
+                }
+              },
+              {
+                "id": "pause",
+                "label": {
+                  "en": "Pause all vacuum schedules"
+                }
+              },
+              {
+                "id": "resume",
+                "label": {
+                  "en": "Resume vacuum schedules"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "k11_presence_state",
+        "title": {
+          "en": "Record vacuum presence state"
+        },
+        "titleFormatted": {
+          "en": "Record [[presence]] for scheduled cleaning"
+        },
+        "hint": {
+          "en": "Use only from Homey's user-enter and user-leave Flows. Away time must remain continuous for at least 30 minutes before any scheduled cleaning can start."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=robot_vacuum_K11_hub"
+          },
+          {
+            "name": "presence",
+            "type": "dropdown",
+            "title": {
+              "en": "Presence"
+            },
+            "values": [
+              {
+                "id": "away",
+                "label": {
+                  "en": "Away"
+                }
+              },
+              {
+                "id": "home",
+                "label": {
+                  "en": "Home"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "k11_start_room",
+        "title": {
+          "en": "Start verified room scene safely"
+        },
+        "hint": {
+          "en": "Requires fresh online status, at least 30% battery and an idle robot. Uses only the configured native vacuum scene; no whole-home fallback."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=robot_vacuum_K11_hub"
+          }
+        ]
+      },
+      {
+        "id": "k11_start_scheduled_room",
+        "title": {
+          "en": "Start daily room cleaning with safeguards"
+        },
+        "hint": {
+          "en": "Also requires an approved physical test, armed schedule, outside quiet hours, and no prior automatic request today. No automatic retry."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=robot_vacuum_K11_hub"
           }
         ]
       },
@@ -7000,13 +7327,45 @@
       },
       "class": "blinds",
       "capabilities": [
-        "windowcoverings_tilt_set"
+        "windowcoverings_closed",
+        "windowcoverings_tilt_up",
+        "windowcoverings_tilt_down",
+        "windowcoverings_tilt_set",
+        "position",
+        "measure_battery"
       ],
       "energy": {
         "batteries": [
           "INTERNAL"
         ]
-      }
+      },
+      "settings": [
+        {
+          "id": "closePosition",
+          "type": "radio",
+          "label": {
+            "en": "Quick-action close direction"
+          },
+          "value": "down",
+          "values": [
+            {
+              "id": "down",
+              "label": {
+                "en": "Tilt down"
+              }
+            },
+            {
+              "id": "up",
+              "label": {
+                "en": "Tilt up"
+              }
+            }
+          ],
+          "hint": {
+            "en": "Choose which fully closed direction the Open/Close quick action uses."
+          }
+        }
+      ]
     },
     {
       "id": "bot_ble",
@@ -9483,30 +9842,31 @@
           "template": "login_oauth2"
         }
       ],
-      "icon": "/drivers/lock_ultra_hub/assets/icon.svg",
+      "icon": "/drivers/lock_pro_matter_hub/assets/icon.svg",
       "images": {
-        "large": "/drivers/lock_ultra_hub/assets/images/large.jpg",
-        "small": "/drivers/lock_ultra_hub/assets/images/small.jpg"
+        "large": "/drivers/lock_pro_matter_hub/assets/images/large.jpg",
+        "small": "/drivers/lock_pro_matter_hub/assets/images/small.jpg"
       },
-      "id": "lock_ultra_hub",
+      "id": "lock_pro_matter_hub",
       "name": {
-        "en": "Lock Pro and Ultra(HUB)",
-        "no": "Lås Pro og Ultra(HUB)",
-        "nl": "Slot Pro en Ultra(HUB)",
-        "da": "Lås Pro og Ultra(HUB)",
-        "de": "Schloss Pro und Ultra(HUB)",
-        "es": "Cerradura Pro y Ultra(HUB)",
-        "fr": "Serrure Pro et Ultra(HUB)",
-        "it": "Serratura Pro e Ultra(HUB)",
-        "sv": "Lås Pro och Ultra(HUB)",
-        "pl": "Zamek Pro i Ultra(HUB)",
-        "ru": "Замок Pro и Ultra(HUB)",
-        "ko": "잠금 장치 Pro 및 Ultra(HUB)"
+        "en": "Lock Pro Matter Enabled(HUB)",
+        "no": "Lock Pro Matter Enabled(HUB)",
+        "nl": "Lock Pro Matter Enabled(HUB)",
+        "da": "Lock Pro Matter Enabled(HUB)",
+        "de": "Lock Pro Matter Enabled(HUB)",
+        "es": "Lock Pro Matter Enabled(HUB)",
+        "fr": "Lock Pro Matter Enabled(HUB)",
+        "it": "Lock Pro Matter Enabled(HUB)",
+        "sv": "Lock Pro Matter Enabled(HUB)",
+        "pl": "Lock Pro Matter Enabled(HUB)",
+        "ru": "Lock Pro Matter Enabled(HUB)",
+        "ko": "Lock Pro Matter Enabled(HUB)"
       },
       "class": "lock",
       "capabilities": [
         "lock",
         "deadbolt",
+        "nightlatchunlock",
         "unlock",
         "locked",
         "locked_status",
@@ -9550,6 +9910,130 @@
             "pl": "Drzwi Otwarte",
             "ru": "Дверь Открыта",
             "ko": "문 열림"
+          }
+        }
+      },
+      "energy": {
+        "batteries": [
+          "OTHER"
+        ]
+      }
+    },
+    {
+      "platforms": [
+        "local",
+        "cloud"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "pair": [
+        {
+          "id": "login_oauth2",
+          "template": "login_oauth2"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login_oauth2",
+          "template": "login_oauth2"
+        }
+      ],
+      "icon": "/drivers/lock_ultra_hub/assets/icon.svg",
+      "images": {
+        "large": "/drivers/lock_ultra_hub/assets/images/large.jpg",
+        "small": "/drivers/lock_ultra_hub/assets/images/small.jpg"
+      },
+      "id": "lock_ultra_hub",
+      "name": {
+        "en": "Lock Pro and Ultra(HUB)",
+        "no": "Lås Pro og Ultra(HUB)",
+        "nl": "Slot Pro en Ultra(HUB)",
+        "da": "Lås Pro og Ultra(HUB)",
+        "de": "Schloss Pro und Ultra(HUB)",
+        "es": "Cerradura Pro y Ultra(HUB)",
+        "fr": "Serrure Pro et Ultra(HUB)",
+        "it": "Serratura Pro e Ultra(HUB)",
+        "sv": "Lås Pro och Ultra(HUB)",
+        "pl": "Zamek Pro i Ultra(HUB)",
+        "ru": "Замок Pro и Ultra(HUB)",
+        "ko": "잠금 장치 Pro 및 Ultra(HUB)"
+      },
+      "class": "lock",
+      "capabilities": [
+        "lock",
+        "unlock",
+        "locked",
+        "locked_status",
+        "alarm_generic",
+        "alarm_contact",
+        "measure_battery"
+      ],
+      "capabilitiesOptions": {
+        "locked": {
+          "getable": true,
+          "setable": true,
+          "uiComponent": "toggle"
+        },
+        "lock": {
+          "uiComponent": null
+        },
+        "unlock": {
+          "uiComponent": null
+        },
+        "alarm_generic": {
+          "title": {
+            "en": "Door Jammed",
+            "no": "Dør blokkert",
+            "nl": "Deur Vastgelopen",
+            "da": "Dør Fastklemt",
+            "de": "Tür blockiert",
+            "es": "Puerta Atascada",
+            "fr": "Porte Bloquée",
+            "it": "Porta Bloccata",
+            "sv": "Dörr Fastnat",
+            "pl": "Drzwi Zacięte",
+            "ru": "Дверь Заклинило",
+            "ko": "문이 막힘"
+          },
+          "insightsTitleTrue": {
+            "en": "Door jammed"
+          },
+          "insightsTitleFalse": {
+            "en": "Jam cleared"
+          }
+        },
+        "alarm_contact": {
+          "title": {
+            "en": "Door Open",
+            "no": "Dør åpen",
+            "nl": "Deur Open",
+            "da": "Dør Åben",
+            "de": "Tür Offen",
+            "es": "Puerta Abierta",
+            "fr": "Porte Ouverte",
+            "it": "Porta Aperta",
+            "sv": "Dörr Öppen",
+            "pl": "Drzwi Otwarte",
+            "ru": "Дверь Открыта",
+            "ko": "문 열림"
+          },
+          "insightsTitleTrue": {
+            "en": "Door opened"
+          },
+          "insightsTitleFalse": {
+            "en": "Door closed"
           }
         }
       },
@@ -10054,7 +10538,8 @@
       "capabilities": [
         "onoff",
         "measure_current",
-        "measure_voltage"
+        "measure_voltage",
+        "plug_last_polled"
       ]
     },
     {
@@ -10163,7 +10648,10 @@
       "class": "sensor",
       "capabilities": [
         "alarm_presence",
-        "measure_luminance"
+        "measure_luminance",
+        "presence_battery_band",
+        "presence_last_report",
+        "presence_last_event"
       ],
       "energy": {
         "batteries": [
@@ -11032,9 +11520,32 @@
         "robot_vaccum_state",
         "robot_vaccum_task",
         "measure_battery",
+        "k11_last_seen",
+        "measure_k11_status_age",
+        "k11_monitor_status",
+        "k11_presence_guard",
+        "k11_schedules_paused",
+        "k11_skip_next",
+        "k11_last_run",
         "volume_set"
       ],
       "capabilitiesOptions": {
+        "vaccum_clean_mode": {
+          "values": [
+            {
+              "id": "sweep",
+              "title": {
+                "en": "Sweep"
+              }
+            },
+            {
+              "id": "sweep_mop",
+              "title": {
+                "en": "Mop"
+              }
+            }
+          ]
+        },
         "play": {
           "title": {
             "en": "Start",
@@ -11056,7 +11567,65 @@
         "batteries": [
           "INTERNAL"
         ]
-      }
+      },
+      "settings": [
+        {
+          "id": "k11_morning_scene",
+          "type": "text",
+          "label": {
+            "en": "Verified Quiet scene ID allowed at home at 05:00"
+          },
+          "value": ""
+        },
+        {
+          "id": "k11_room_scene",
+          "type": "text",
+          "label": {
+            "en": "Native vacuum-only room scene ID"
+          },
+          "value": ""
+        },
+        {
+          "id": "k11_room_verified",
+          "type": "checkbox",
+          "label": {
+            "en": "Room scene map and vacuum-only action verified"
+          },
+          "value": false
+        },
+        {
+          "id": "k11_test_verified",
+          "type": "checkbox",
+          "label": {
+            "en": "Supervised Start, Pause, Dock and room test passed"
+          },
+          "value": false
+        },
+        {
+          "id": "k11_schedule_armed",
+          "type": "checkbox",
+          "label": {
+            "en": "Allow automatic room cleaning"
+          },
+          "value": false
+        },
+        {
+          "id": "k11_quiet_start",
+          "type": "text",
+          "label": {
+            "en": "Quiet hours start (HH:MM, Homey local time)"
+          },
+          "value": "22:00"
+        },
+        {
+          "id": "k11_quiet_end",
+          "type": "text",
+          "label": {
+            "en": "Quiet hours end (HH:MM, Homey local time)"
+          },
+          "value": "09:00"
+        }
+      ]
     },
     {
       "platforms": [
@@ -13798,6 +14367,62 @@
       "setable": true,
       "icon": "/assets/fan_mode.svg"
     },
+    "k11_last_run": {
+      "type": "string",
+      "title": {
+        "en": "Last scheduled run"
+      },
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/vacuum_state.svg"
+    },
+    "k11_last_seen": {
+      "type": "string",
+      "title": {
+        "en": "Last report"
+      },
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/clock.svg"
+    },
+    "k11_monitor_status": {
+      "type": "string",
+      "title": {
+        "en": "Safety monitor"
+      },
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/vacuum_state.svg"
+    },
+    "k11_presence_guard": {
+      "type": "string",
+      "title": {
+        "en": "Cleaning presence gate"
+      },
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/home.svg"
+    },
+    "k11_schedules_paused": {
+      "type": "boolean",
+      "title": {
+        "en": "Pause all vacuum schedules"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "icon": "/assets/vacuum_state.svg"
+    },
+    "k11_skip_next": {
+      "type": "boolean",
+      "title": {
+        "en": "Skip next cleaning"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "icon": "/assets/vacuum_state.svg"
+    },
     "light_level": {
       "type": "number",
       "title": {
@@ -13871,6 +14496,21 @@
       "getable": true,
       "setable": false,
       "icon": "/assets/locked.svg"
+    },
+    "measure_k11_status_age": {
+      "type": "number",
+      "title": {
+        "en": "Status age"
+      },
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "min"
+      },
+      "decimals": 0,
+      "min": 0,
+      "insights": false,
+      "icon": "/assets/vacuum_state.svg"
     },
     "motion_enabled": {
       "type": "boolean",
@@ -14036,6 +14676,27 @@
       "getable": true,
       "setable": true
     },
+    "nightlatchunlock": {
+      "type": "boolean",
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "title": {
+        "en": "Night Latch Unlock",
+        "no": "Lås opp nattlås",
+        "nl": "Nachtslot Ontgrendelen",
+        "da": "Lås Natlås Op",
+        "de": "Nachtriegel Entriegeln",
+        "es": "Desbloquear Pestillo Nocturno",
+        "fr": "Déverrouiller le Verrou de Nuit",
+        "it": "Sblocca Chiavistello Notturno",
+        "sv": "Lås Upp Nattlås",
+        "pl": "Odblokuj Zasuwę Nocną",
+        "ru": "Разблокировать Ночной Замок",
+        "ko": "나이트 래치 잠금 해제"
+      },
+      "icon": "/assets/locked.svg"
+    },
     "open_close": {
       "type": "boolean",
       "title": {
@@ -14149,6 +14810,15 @@
       },
       "icon": "/assets/play_scene.svg"
     },
+    "plug_last_polled": {
+      "type": "string",
+      "title": {
+        "en": "Last checked"
+      },
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/clock.svg"
+    },
     "position": {
       "type": "number",
       "title": {
@@ -14225,6 +14895,35 @@
         "ko": "켜기"
       },
       "icon": "/assets/power_on.svg"
+    },
+    "presence_battery_band": {
+      "type": "string",
+      "title": {
+        "en": "Battery range (last known)"
+      },
+      "icon": "/assets/battery-band.svg",
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "presence_last_event": {
+      "type": "string",
+      "title": {
+        "en": "Last SwitchBot event received"
+      },
+      "icon": "/assets/clock.svg",
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "presence_last_report": {
+      "type": "string",
+      "title": {
+        "en": "Last valid status received"
+      },
+      "icon": "/assets/clock.svg",
+      "getable": true,
+      "setable": false
     },
     "prev": {
       "type": "boolean",
@@ -15140,7 +15839,7 @@
         {
           "id": "2",
           "title": {
-            "en": "Normal",
+            "en": "Standard",
             "no": "Normal",
             "nl": "Normaal",
             "da": "Normal",

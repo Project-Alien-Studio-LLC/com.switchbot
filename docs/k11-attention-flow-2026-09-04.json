@@ -1,0 +1,23 @@
+{
+  "name": "[K11+] Needs attention — quiet, deduplicated alerts",
+  "enabled": true,
+  "folder": "24a3faaa-d13d-4836-83c2-67c4d46fa940",
+  "trigger": {
+    "id": "homey:device:6ddd0453-a0fe-4492-881b-c04b783711c5:k11_attention",
+    "uri": "homey:flowcardtrigger:homey:device:6ddd0453-a0fe-4492-881b-c04b783711c5:k11_attention",
+    "args": {}
+  },
+  "conditions": [],
+  "actions": [
+    {
+      "id": "homey:manager:mobile:push_text",
+      "uri": "homey:flowcardaction:homey:manager:mobile:push_text",
+      "args": { "user": { "id": "894c643c-1b31-446d-ae90-407802097ce0", "name": "George Martinez", "athomId": "6817f5115141e7afaedf058b" }, "text": "[[message]]" }
+    },
+    {
+      "id": "homey:manager:notifications:create_notification",
+      "uri": "homey:flowcardaction:homey:manager:notifications:create_notification",
+      "args": { "text": "[[message]]" }
+    }
+  ]
+}

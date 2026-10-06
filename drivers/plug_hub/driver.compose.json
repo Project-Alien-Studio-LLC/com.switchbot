@@ -18,7 +18,8 @@
   "capabilities": [
     "onoff",
     "measure_current",
-    "measure_voltage"
+    "measure_voltage",
+    "plug_last_polled"
   ],
   "$extends": [
     "hubDriver"

@@ -1,0 +1,15 @@
+{
+  "name": "Clean Livingroom",
+  "folder": "24a3faaa-d13d-4836-83c2-67c4d46fa940",
+  "enabled": true,
+  "cards": {
+    "4ff87f54-9ae9-475b-a641-2eee3548b6d5": {
+      "type": "start", "x": 20, "y": 320,
+      "outputSuccess": ["19cdb46b-4aa0-488d-8af9-b4455299c654"]
+    },
+    "19cdb46b-4aa0-488d-8af9-b4455299c654": {
+      "id": "homey:device:6ddd0453-a0fe-4492-881b-c04b783711c5:k11_start_room",
+      "args": {}, "type": "action", "x": 180, "y": 220
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "[K11+] Daily Living Room — DISABLED pending test/time",
+  "enabled": false,
+  "folder": "24a3faaa-d13d-4836-83c2-67c4d46fa940",
+  "trigger": {
+    "id": "homey:manager:cron:time_exactly",
+    "uri": "homey:flowcardtrigger:homey:manager:cron:time_exactly",
+    "args": { "time": "12:00" }
+  },
+  "conditions": [],
+  "actions": [{
+    "id": "homey:device:6ddd0453-a0fe-4492-881b-c04b783711c5:k11_start_scheduled_room",
+    "uri": "homey:flowcardaction:homey:device:6ddd0453-a0fe-4492-881b-c04b783711c5:k11_start_scheduled_room",
+    "args": {}
+  }]
+}

@@ -26,9 +26,22 @@
     "robot_vaccum_state",
 	"robot_vaccum_task",
     "measure_battery",
+    "k11_last_seen",
+    "measure_k11_status_age",
+    "k11_monitor_status",
+    "k11_presence_guard",
+    "k11_schedules_paused",
+    "k11_skip_next",
+    "k11_last_run",
 	"volume_set"
   ],
   "capabilitiesOptions": {
+    "vaccum_clean_mode": {
+      "values": [
+        { "id": "sweep", "title": { "en": "Sweep" } },
+        { "id": "sweep_mop", "title": { "en": "Mop" } }
+      ]
+    },
     "play": {
       "title": {
         "en": "Start",

@@ -12,7 +12,20 @@ class HubVacuumK11Driver extends HubDriver
 	 */
 	async onOAuth2Init()
 	{
-		super.onOAuth2Init();
+		await super.onOAuth2Init();
+		this.homey.flow.getActionCard('k11_start_room').registerRunListener((args) => args.device.startRoom(false));
+		this.homey.flow.getActionCard('k11_start_scheduled_room').registerRunListener((args) => args.device.startRoom(true));
+		this.homey.flow.getActionCard('k11_run_schedule')
+			.registerRunListener((args) => args.device.k11Monitor.runSchedule(args))
+			.registerArgumentAutocompleteListener('scene', async (query) => this.homey.drivers.getDriver('scene').getDevices()
+				.map((scene) => ({ id: scene.getData().id, name: scene.getName() }))
+				.filter((scene) => scene.name.toLowerCase().includes(query.toLowerCase())));
+		this.homey.flow.getActionCard('k11_schedule_control').registerRunListener((args) => {
+			const controls = { pause: ['schedulesPaused', true], resume: ['schedulesPaused', false], skip: ['skipNext', true], unskip: ['skipNext', false] };
+			if (!controls[args.control]) throw new Error('Unknown schedule control');
+			return args.device.k11Monitor.setScheduleControl(...controls[args.control]);
+		});
+		this.homey.flow.getActionCard('k11_presence_state').registerRunListener((args) => args.device.k11Monitor.recordPresence(args.presence));
 
 		this.log('HubVacuumK11Driver has been initialized');
 	}

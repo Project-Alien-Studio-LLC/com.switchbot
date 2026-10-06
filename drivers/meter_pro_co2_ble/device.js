@@ -85,6 +85,7 @@ class MeterProCO2BLEDevice extends Homey.Device
 				{
 					const name = this.getName();
 					this.homey.app.updateLog(`BLE device ${name} not found`, 'ble');
+					this.homey.app.markBLEPollServiceData(this, false);
 					return;
 				}
 

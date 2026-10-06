@@ -275,11 +275,8 @@ class CurtainsBLEDevice extends Homey.Device
 
 		this.sendingCommand = false;
 
-		if (response instanceof Error)
-		{
-			this.homey.app.updateLog(`!!!!!!! Command for ${name} failed\r\n`, 0, 'ble');
-			throw response;
-		}
+		this.homey.app.updateLog(`!!!!!!! Command for ${name} failed\r\n`, 0, 'ble');
+		throw response instanceof Error ? response : new Error(`BLE command failed for ${name} after all retries`);
 	}
 
 	async _operateCurtainsLoop(name, bytes)
@@ -291,11 +288,19 @@ class CurtainsBLEDevice extends Homey.Device
 			this.homey.app.updateLog(`Looking for BLE device: ${name}`, 'ble');
 
 			const dd = this.getData();
-			const bleAdvertisement = await this.homey.ble.find(dd.id);
+			let bleAdvertisement = await this.homey.ble.find(dd.id);
 			if (!bleAdvertisement)
 			{
-				this.homey.app.updateLog(`BLE device ${name} not found`, 2, 'ble');
-				return false;
+				// `find()` only sees Homey's current advertisement cache. Refresh it
+				// once for an interactive command before treating the device as gone.
+				this.homey.app.updateLog(`BLE device ${name} not cached; refreshing discovery`, 2, 'ble');
+				await this.homey.ble.discover(['cba20d00224d11e69fb80002a5d5c51b'], 2000);
+				bleAdvertisement = await this.homey.ble.find(dd.id);
+				if (!bleAdvertisement)
+				{
+					this.homey.app.updateLog(`BLE device ${name} not found after refresh`, 2, 'ble');
+					return false;
+				}
 			}
 
 			this.homey.app.updateLog(`Connecting to BLE device: ${name}`, 'ble');
@@ -312,27 +317,14 @@ class CurtainsBLEDevice extends Homey.Device
 				this.homey.app.updateLog(`Getting write characteristic for ${name}`, 'ble');
 				const bleCharacteristic = await bleService.getCharacteristic('cba20002224d11e69fb80002a5d5c51b');
 
-				if (parseInt(this.homey.version, 10) >= 6)
-				{
-					this.homey.app.updateLog(`Getting notify characteristic for ${name}`, 'ble');
-					const bleNotifyCharacteristic = await bleService.getCharacteristic('cba20003224d11e69fb80002a5d5c51b');
-
-					try
-					{
-						await bleNotifyCharacteristic.subscribeToNotifications((data) =>
-						{
-							sending = false;
-							this.homey.app.updateLog(`received notification for ${name}: ${this.homey.app.varToString(data)}`, 'ble');
-						});
-					}
-					catch (err)
-					{
-						this.homey.app.updateLog(`subscribeToNotifications: ${name}: ${err.message}`, 0, 'ble');
-					}
-				}
-
+				// Curtain firmware publishes state through advertisements. Waiting to
+				// subscribe for a notification before every command can time out and
+				// disconnect the peripheral before the control write reaches it.
+				// Treat a completed write as the command acknowledgement and let the
+				// advertisement/polling path refresh Homey's position afterwards.
 				this.homey.app.updateLog(`Writing data to ${name}`, 'ble');
 				await bleCharacteristic.write(reqBuf);
+				sending = false;
 			}
 			catch (err)
 			{
@@ -391,6 +383,7 @@ class CurtainsBLEDevice extends Homey.Device
 				if (!bleAdvertisement)
 				{
 					this.homey.app.updateLog(`BLE device ${name} not found`, 'ble');
+					this.homey.app.markBLEPollServiceData(this, false);
 					return;
 				}
 
