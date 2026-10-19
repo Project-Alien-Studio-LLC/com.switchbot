@@ -28,12 +28,30 @@ This patch prevents false command success; it cannot repair provider rejection o
 prove a cached GET is fresh. Offline tests are not restored automatic-control
 acceptance. Installation replaces/restarts the shared SwitchBot app and briefly
 affects its other devices; not performed without a reviewed maintenance window.
-Current build remains2.0.100; no version/release claim or merge. Restore prior app
-source/package only for rollback; preserve settings, tokens, pairings and Flow IDs.
+The initial source-only build was2.0.100; the authorized maintenance deployment
+below supersedes that installation status. No merge or public release was made.
 
-Next: resolve existing provider cloud-control reachability without new credentials
-or re-pairing; obtain approval for shared-app install window. After source/runtime
-verification, use one bounded genuine door event and independent native/physical
-readback, no forced ON/repeated OFF loop. Keep automatic acceptance open.
+## Authorized maintenance deployment
+
+Sensei Geo authorized the brief shared-app maintenance window. A fresh private SSD
+backup retains settings/credentials, all devices and Flows, the prior2.0.100 build
+and environment for rollback. Isolated locked production dependencies were packaged
+without modifying the original dirty checkout. Version2.0.101 passed158 offline
+tests and Homey's verified-level validation, then installed without clean/reset.
+
+At11:13AM Eastern, independent API readback showed2.0.101 running, not crashed,
+all71 SwitchBot devices available, and unchanged device identities/settings,
+credential settings and all119 Advanced plus27 standard Flows. Cloud status had
+changed to Off/0W before the verification command. One bounded Homey Off at
+11:13:51AM returned HTTP200 through the strict patched path and read back Off.
+The Mac SwitchBot app independently shows an11:13AM Turn off / API log entry,
+alongside the earlier10:41AM App Control entry, and Off/0W device detail.
+
+Cloud command reachability is now observed working; its recovery mechanism is
+not independently established. No credential, permission, network or pairing
+changes were needed. No On command, blind retry, merge or Caesar worker start
+was used. A genuine subsequent door-triggered cycle with physical confirmation
+remains the automatic-control acceptance gate; the successful idempotent Off
+does not establish that complete cycle or durable provider reliability.
 
 Vendor contract: https://github.com/OpenWonderLabs/SwitchBotAPI/blob/main/devices/plugs-switches/relay-switch-1pm.md
