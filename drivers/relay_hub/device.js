@@ -16,6 +16,9 @@ class RelayHubDevice extends HubDevice
 		// may reject its command endpoint with 190 ("not support device type").
 		// Prefer the account OAuth command endpoint, which supports the relay.
 		this.preferOAuthCommands = true;
+		// A successful cached status GET does not turn a rejected command into
+		// success. In particular, 161 must never be retried or acknowledged.
+		this.requireCommandAcceptance = true;
 		this.initialised = false;
 		await super.onInit();
 
@@ -104,7 +107,31 @@ class RelayHubDevice extends HubDevice
 			commandType: 'command',
 		};
 
-		return super.setDeviceData(data);
+		try
+		{
+			const accepted = await super.setDeviceData(data);
+			if (!accepted) throw new Error('Relay command acceptance is unknown');
+			const report = await this._getHubDeviceValues();
+			const observed = this.parseSwitchStatus(report && report.switchStatus);
+			if (observed !== (command === 'turnOn')) throw new Error('Relay command accepted but requested state is not verified');
+			await this.setCapabilityValue('onoff', observed);
+			this._relayCommandUnverified = false;
+			await this.unsetWarning();
+			return accepted;
+		}
+		catch (err)
+		{
+			this._relayCommandUnverified = true;
+			await this.setWarning('Relay command failed or state unverified; no automatic retry').catch(this.error);
+			throw err;
+		}
+	}
+
+	parseSwitchStatus(value)
+	{
+		if (value === 0) return false;
+		if (value === 1) return true;
+		throw new Error('Relay status is missing or invalid; previous state retained');
 	}
 
 	async pollHubDeviceValues()
@@ -125,10 +152,11 @@ class RelayHubDevice extends HubDevice
 			const data = await this._getHubDeviceValues();
 			if (data)
 			{
+				const observed = this.parseSwitchStatus(data.switchStatus);
 				this.setAvailable();
 				this.homey.app.updateLog(`Relay Hub got: ${this.homey.app.varToString(data)}`, 3, 'hub', 'hub');
 
-				this.setCapabilityValue('onoff', data.switchStatus === 1).catch(this.error);
+				await this.setCapabilityValue('onoff', observed);
 				if (this.hasCapability('measure_voltage'))
 				{
 					this.setCapabilityValue('measure_voltage', data.voltage).catch(this.error);
@@ -140,7 +168,7 @@ class RelayHubDevice extends HubDevice
 					await this.setDailyEnergyMeterValue('meter_power', data.usedElectricity);
 				}
 			}
-			this.unsetWarning().catch(this.error);
+			if (!this._relayCommandUnverified) this.unsetWarning().catch(this.error);
 		}
 		catch (err)
 		{
@@ -164,7 +192,7 @@ class RelayHubDevice extends HubDevice
 				// message is for this device
 				const data = message.context;
 				this.homey.app.updateLog(`processWebhookMessage: ${this.homey.app.varToString(data)}`, 3, 'hub', 'hub');
-				this.setCapabilityValue('onoff', data.switchStatus === 1).catch(this.error);
+				await this.setCapabilityValue('onoff', this.parseSwitchStatus(data.switchStatus));
 			}
 		}
 		catch (err)
